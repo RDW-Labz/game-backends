@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T09:47:04Z",
+ "category": "procgen",
+ "commit": "9889f9a9d3cc",
+ "delivery": "reference",
+ "description": "fullike/Arteries \u2014 A procedural modeling toolkit base on UE4 blueprint",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Arteries",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 31183,
+ "slug": "fullike-arteries",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 118,
+ "system": "A procedural modeling toolkit base on UE4 blueprint",
+ "upstream": "https://github.com/fullike/Arteries",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T09:47:06Z",
+ "category": "procgen",
+ "commit": "2016-06-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Erkaman/gl-rock \u2014 Procedural Generation of Rocks in WebGL",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "gl-rock",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "erkaman-gl-rock",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 112,
+ "system": "Procedural Generation of Rocks in WebGL",
+ "upstream": "https://github.com/Erkaman/gl-rock",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

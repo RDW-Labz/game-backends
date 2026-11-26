@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 09:47 UTC · 1958 entries · 491 vendored, 1467 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
 | [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
-| [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
+| [procgen](#procgen) — Procedural generation | 146 | 36 | 110 |
 
 
 ## engines
@@ -1877,7 +1877,7 @@ _Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-
 
 ## procgen
 
-**Procedural generation** — 143 entries
+**Procedural generation** — 146 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1886,6 +1886,7 @@ _Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-
 | [ae-motion-compiler](entries/procgen/volumetenrectify-ae-motion-compiler/README.md) | Motion graphics automation framework for Adobe After Effects CC 2024+. Procedural keyframe generation, expression-based animation control, layer automation, and | html | none | reference | [Volumetenrectify/ae-motion-compiler](https://github.com/Volumetenrectify/ae-motion-compiler) @ `c64daebc9e52` |
 | [afternoon-light](entries/procgen/bubblebrainbb-afternoon-light/README.md) | 午后 · Afternoon Light — a still image computed entirely by code: a from-scratch C++ path tracer and a fully procedural scene. No image-generation model, no textu | c++ | unknown | reference | [BubbleBrainBB/afternoon-light](https://github.com/BubbleBrainBB/afternoon-light) @ `2026-11-10 (branch tip at catalogue time)` |
 | [ArduTouch](entries/procgen/maltman23-ardutouch/README.md) | ==> ARDUTOUCH KITS ARE AVAILABLE at CornfieldElectronics.com <==  ArduTouch is an Arduino-compatible music synthesizer kit with a built-in touch keyboard, and w | c++ | CC-BY-SA-3.0 | reference | [maltman23/ArduTouch](https://github.com/maltman23/ArduTouch) @ `8b6c6f74e6ca` |
+| [Arteries](entries/procgen/fullike-arteries/README.md) | A procedural modeling toolkit base on UE4 blueprint | c++ | none | reference | [fullike/Arteries](https://github.com/fullike/Arteries) @ `9889f9a9d3cc` |
 | [astray](entries/procgen/sience-astray/README.md) | Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games | lua | Zlib | vendored | [SiENcE/astray](https://github.com/SiENcE/astray) @ `1a557a8281a8` |
 | [bevy_generative](entries/procgen/manankarnik-bevy-generative/README.md) | Real-time procedural generation of maps, textures, terrain, planets and more! | rust | Apache-2.0 | reference | [manankarnik/bevy_generative](https://github.com/manankarnik/bevy_generative) @ `2025-10-08 (branch tip at catalogue time)` |
 | [Blender-Python-Procedural-Level-Generation](entries/procgen/aaronjolson-blender-python-procedural-level-generation/README.md) | Collection of scripts for generating 3D levels (environments/dungeons) procedurally using Blender's Python API. | python | MIT | vendored | [aaronjolson/Blender-Python-Procedural-Level-Generation](https://github.com/aaronjolson/Blender-Python-Procedural-Level-Generation) @ `d15583202642` |
@@ -1926,6 +1927,7 @@ _Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-
 | [gdTree3D](entries/procgen/jeksun97-gdtree3d/README.md) | 🌳 Plugin for procedural generation of 3D trees of varying complexity for Godot Engine. | c++ | MIT | vendored | [JekSun97/gdTree3D](https://github.com/JekSun97/gdTree3D) @ `e9ec657b0ee3` |
 | [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
 | [ghx_proc_gen](entries/procgen/henauxg-ghx-proc-gen/README.md) | 2D & 3D procedural generation with WFC/Model synthesis in Rust | rust | Apache-2.0 | reference | [Henauxg/ghx_proc_gen](https://github.com/Henauxg/ghx_proc_gen) @ `2026-10-13 (branch tip at catalogue time)` |
+| [gl-rock](entries/procgen/erkaman-gl-rock/README.md) | Procedural Generation of Rocks in WebGL | javascript | unknown | reference | [Erkaman/gl-rock](https://github.com/Erkaman/gl-rock) @ `2016-06-17 (branch tip at catalogue time)` |
 | [godot-4-procedural-generation](entries/procgen/gdquest-demos-godot-4-procedural-generation/README.md) | Procedural generation algorithms and demos for the Godot game engine | gdscript | MIT | vendored | [gdquest-demos/godot-4-procedural-generation](https://github.com/gdquest-demos/godot-4-procedural-generation) @ `19c98cee16ed` |
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
 | [godot-nexus-vertex-painter](entries/procgen/undomick-godot-nexus-vertex-painter/README.md) | A tool for manual painting and procedural generation of vertex color channels on 3D meshes. | gdscript | MIT | vendored | [undomick/godot-nexus-vertex-painter](https://github.com/undomick/godot-nexus-vertex-painter) @ `705db59d426e` |
@@ -1984,6 +1986,7 @@ _Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-
 | [rust-procedural-world](entries/procgen/bones-ai-rust-procedural-world/README.md) | Procedural 2d world generation in Rust and Bevy | rust | MIT | reference | [bones-ai/rust-procedural-world](https://github.com/bones-ai/rust-procedural-world) @ `2025-04-28 (branch tip at catalogue time)` |
 | [Sceelix](entries/procgen/sceelix-sceelix/README.md) | A procedural generation software for automating 2D/3D content creation. | c# | unknown | reference | [sceelix/Sceelix](https://github.com/sceelix/Sceelix) @ `2025-09-12 (branch tip at catalogue time)` |
 | [SdfFontDesigner](entries/procgen/aiekick-sdffontdesigner/README.md) | Offline font tuning/bitmap generation via shaders | glsl | MIT | reference | [aiekick/SdfFontDesigner](https://github.com/aiekick/SdfFontDesigner) @ `2025-06-29 (branch tip at catalogue time)` |
+| [SeedThree](entries/procgen/skyeshark-seedthree/README.md) | Open-source procedural tree & plant generator for Three.js (WebGPU) — infinite species generation. | javascript | MIT | vendored | [SkyeShark/SeedThree](https://github.com/SkyeShark/SeedThree) @ `cf2eaad39d9b` |
 | [SoilMachine](entries/procgen/weigert-soilmachine/README.md) | Advanced, modular, coupled geomorpohology simulator for real-time procedural terrain generation. | c++ | unknown | reference | [weigert/SoilMachine](https://github.com/weigert/SoilMachine) @ `2023-06-11 (branch tip at catalogue time)` |
 | [source-map](entries/procgen/parcel-bundler-source-map/README.md) | A fast source map manipulation, generation and consumption library written in Rust and Node.js | javascript | unknown | reference | [parcel-bundler/source-map](https://github.com/parcel-bundler/source-map) @ `2026-11-09 (branch tip at catalogue time)` |
 | [space-2d](entries/procgen/wwwtyro-space-2d/README.md) | Fast procedural 2D space scene generation on the GPU. | javascript | Unlicense | reference | [wwwtyro/space-2d](https://github.com/wwwtyro/space-2d) @ `2016-10-24 (branch tip at catalogue time)` |

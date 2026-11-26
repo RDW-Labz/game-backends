@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T09:46:46Z",
+ "category": "procgen",
+ "commit": "cf2eaad39d9b",
+ "delivery": "vendored",
+ "description": "SkyeShark/SeedThree \u2014 Open-source procedural tree & plant generator for Three.js (WebGPU) \u2014 infinite species generation.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SeedThree",
+ "size_bytes": 973243,
+ "slug": "skyeshark-seedthree",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 119,
+ "system": "Open-source procedural tree & plant generator for Three.js (WebGPU) \u2014 infinite species generation.",
+ "upstream": "https://github.com/SkyeShark/SeedThree",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

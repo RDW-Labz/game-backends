@@ -3681,3 +3681,8 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-26 09:30 UTC** — tick 940: +1 screened, +0 reference, 25 skipped, catalogue=1955
   - added save-state/qnzhou-mshio (Apache-2.0, vendored)
+
+- **2026-11-26 09:47 UTC** — tick 941: +2 screened, +1 reference, 57 skipped, catalogue=1958
+  - added procgen/skyeshark-seedthree (MIT, vendored)
+  - added procgen/fullike-arteries (none, reference)
+  - reference procgen/erkaman-gl-rock
