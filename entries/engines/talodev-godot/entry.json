@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T15:38:45Z",
+ "category": "engines",
+ "commit": "6330dcd3e880",
+ "delivery": "vendored",
+ "description": "TaloDev/godot \u2014 Talo's Godot plugin for open source leaderboards, stats, auth, game saves and more",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot",
+ "size_bytes": 1267657,
+ "slug": "talodev-godot",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 250,
+ "system": "Talo's Godot plugin for open source leaderboards, stats, auth, game saves and more",
+ "upstream": "https://github.com/TaloDev/godot",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

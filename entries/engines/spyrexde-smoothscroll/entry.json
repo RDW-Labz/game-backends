@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:38:46Z",
+ "category": "engines",
+ "commit": "2026-08-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SpyrexDE/SmoothScroll \u2014 Addon for the Godot Game Engine that adds a SmoothScrollContainer.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SmoothScroll",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "spyrexde-smoothscroll",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 243,
+ "system": "Addon for the Godot Game Engine that adds a SmoothScrollContainer.",
+ "upstream": "https://github.com/SpyrexDE/SmoothScroll",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

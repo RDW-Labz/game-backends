@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:38:46Z",
+ "category": "engines",
+ "commit": "2026-04-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rayxuln/hastur-operation-plugin \u2014 A plugin providing ability for executing any code on Godot Editor. So that any coding agent can do any operations with Godot Editor. This version is for GDScript. It can execute any GDScript code.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "hastur-operation-plugin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rayxuln-hastur-operation-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 242,
+ "system": "A plugin providing ability for executing any code on Godot Editor. So that any coding agent can do any operations with Godot Editor. This version is for GDScrip",
+ "upstream": "https://github.com/rayxuln/hastur-operation-plugin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

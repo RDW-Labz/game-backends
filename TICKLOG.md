@@ -3761,3 +3761,10 @@ One line per 15-minute extension tick, newest last.
   - reference engines/zijcht-godot-game-settings
   - reference engines/origamidev-pete-todo-manager
   - reference engines/jetbrains-godot-support
+
+- **2026-11-26 15:38 UTC** — tick 963: +2 screened, +3 reference, 55 skipped, catalogue=1996
+  - added engines/bagidea-bagidea-office (MIT, vendored)
+  - added engines/talodev-godot (MIT, vendored)
+  - reference engines/dragonboon-terrainy
+  - reference engines/spyrexde-smoothscroll
+  - reference engines/rayxuln-hastur-operation-plugin

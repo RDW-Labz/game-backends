@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — BagIdea Office</title>
+<meta name="description" content="Full documentation for BagIdea Office: what it is, every feature, installation, usage, plugins, and the complete CLI reference.">
+<link rel="icon" href="img/logo.png">
+<link rel="stylesheet" href="assets/site.css">
+<script defer src="assets/i18n.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="img/logo.png" alt="BagIdea Office logo"> BAG<span>IDEA</span> Office</a>
+    <div class="links">
+      <a class="nav-hide" href="index.html#features" data-i18n="nav_features">Features</a>
+      <a class="nav-hide" href="tools.html" data-i18n="nav_tools">Tools</a>
+      <a class="nav-hide" href="plugins.html" data-i18n="nav_plugins">Plugins</a>
+      <a class="nav-hide" href="showcase.html" data-i18n="nav_showcase">Showcase</a>
+      <a class="nav-hide" href="index.html#install" data-i18n="nav_install">Install</a>
+      <a class="nav-hide" href="index.html#sponsors" data-i18n="nav_sponsors">Sponsors</a>
+      <a class="btn ghost" href="https://github.com/bagidea/bagidea-office" target="_blank" rel="noopener" data-i18n="cta_github">GitHub</a>
+      <div class="langpick"><button class="toggle">🌐 <span class="cur">EN</span></button></div>
+    </div>
+  </div>
+</nav>
+
+<div class="docwrap">
+  <!-- SIDEBAR -->
+  <aside class="docnav">
+    <a href="index.html" data-i18n="d_back">← Home</a>
+    <a href="#guides" data-i18n="dn_guides">📚 Full guides</a>
+    <h4 data-i18n="dn_intro">Introduction</h4>
+    <a href="#intro" data-i18n="dn_what">What it is</a>
+    <a href="#ecosystem" data-i18n="dn_eco">The ecosystem</a>
+    <a href="#concepts" data-i18n="dn_concepts">Core concepts</a>
+    <h4 data-i18n="dn_install">Installation</h4>
+    <a href="#install-win" data-i18n="dn_install_win">Windows (one-shot)</a>
+    <a href="#install-mac" data-i18n="dn_install_mac">macOS (one-shot)</a>
+    <a href="#install-manual" data-i18n="dn_install_manual">Manual build</a>
+    <a href="#install-first" data-i18n="dn_install_first">First run</a>
+    <a href="#install-fix" data-i18n="dn_install_fix">If it fails</a>
+    <h4 data-i18n="dn_using">Using it</h4>
+    <a href="#chat" data-i18n="dn_chat">Chat & the CEO</a>
+    <a href="#projects" data-i18n="dn_projects">Projects</a>
+    <a href="#security" data-i18n="dn_security">Permissions</a>
+    <a href="#auto" data-i18n="dn_auto">Keep going (AUTO)</a>
+    <a href="#where" data-i18n="dn_where">Where agents run</a>
+    <a href="#recall" data-i18n="dn_recall">Recall by meaning</a>
+    <a href="#editor" data-i18n="dn_editor">3D Editor</a>
+    <a href="#voice" data-i18n="dn_voice">Voice & channels</a>
+    <a href="#updates" data-i18n="dn_updates">Updates & start-up</a>
+    <h4 data-i18n="dn_features">More</h4>
+    <a href="#brains" data-i18n="dn_brains">Swappable brains</a>
+    <a href="#plugins" data-i18n="dn_plugins">Plugins & skills</a>
+    <a href="#tools" data-i18n="dn_tools">Tools Hub</a>
+    <a href="#media" data-i18n="dn_media">Media Studio</a>
+    <a href="#workflow" data-i18n="dn_workflow">Workflow Builder</a>
+    <a href="#lang" data-i18n="dn_lang">Languages</a>
+    <a href="#sponsors" data-i18n="dn_sponsors">Sponsoring</a>
+    <a href="https://github.com/bagidea/bagidea-office/blob/main/CHANGELOG.md" target="_blank" rel="noopener" data-i18n="dn_changelog">Changelog ↗</a>
+    <h4 data-i18n="dn_cli">CLI</h4>
+    <a href="#cli" data-i18n="dn_cli">CLI reference</a>
+    <a href="#faq" data-i18n="dn_faq">FAQ</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="doc">
+    <h1 data-i18n="d_title">Documentation</h1>
+    <p class="muted" data-i18n="d_sub">Everything about BagIdea Office — what it is, every feature, how to install, and the full CLI.</p>
+
+    <h2 id="intro" data-i18n="d_intro_h">Introduction</h2>
+    <p data-i18n="d_intro_p1">BagIdea Office is a living AI-agent office that runs as your desktop wallpaper. Every AI agent on your machine becomes a pixel-art employee in an HD-2D office: they walk to their desks when real work starts, gather at Security to ask permission, hold meetings, learn skills, and the lights follow your real local time.</p>
+    <p data-i18n="d_intro_p2">It is not a dashboard and not a chat window — it is a world that renders the true state of your Claude Code sessions, headless agent runs and custom scripts as living characters, behind your desktop icons.</p>
+    <p data-i18n="d_intro_p3">Three independent layers keep it robust: a zero-dependency Node daemon (the source of truth), a Godot 4 renderer (the wallpaper), and a lightweight overlay UI (chat, settings, approvals). The daemon keeps agents running even if rendering restarts.</p>
+    <img src="img/world.png?v=5" alt="BagIdea Office overview">
+
+    <h2 id="guides" data-i18n="d_guides_h">📚 Full guides — how to use every feature</h2>
+    <p data-i18n="d_guides_p">This page is the overview. For step-by-step how-to on every feature — hiring agents, projects, channels, web automation, voice, plugins, models and more — open the full guides (they render on GitHub):</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:14px 0 6px">
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/getting-started.md" target="_blank" rel="noopener" data-i18n="dg_start">🚀 Getting started</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/ecosystem.md" target="_blank" rel="noopener" data-i18n="dn_eco">🌱 The ecosystem</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/agents.md" target="_blank" rel="noopener" data-i18n="dg_agents">🧑‍💼 Agents & hiring</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/projects.md" target="_blank" rel="noopener" data-i18n="dn_projects">📁 Projects</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/office-ops.md" target="_blank" rel="noopener" data-i18n="dg_ops">🗂 Office Ops</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/channels.md" target="_blank" rel="noopener" data-i18n="dg_channels">📡 Channels</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/web-automation.md" target="_blank" rel="noopener" data-i18n="dg_web">🧭 Web automation</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/models.md" target="_blank" rel="noopener" data-i18n="dn_brains">🧠 Swappable brains</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/cost-and-vision.md" target="_blank" rel="noopener" data-i18n="dg_cost">💸 Cost & vision</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/voice-feed.md" target="_blank" rel="noopener" data-i18n="dn_voice">🎤 Voice & feed</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/plugins.md" target="_blank" rel="noopener" data-i18n="dn_plugins">🔌 Plugins & skills</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/plugin-hub.md" target="_blank" rel="noopener" data-i18n="dg_hub">🧩 Plugin Hub</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/tools-hub.md" target="_blank" rel="noopener" data-i18n="dn_tools">🧰 Tools Hub</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/workflows.md" target="_blank" rel="noopener" data-i18n="dn_workflow">🔀 Workflow Builder</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/inbox.md" target="_blank" rel="noopener" data-i18n="dn_inbox">📥 Inbox & notifications</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/budget.md" target="_blank" rel="noopener" data-i18n="dn_budget">💸 Budgets</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/tasks.md" target="_blank" rel="noopener" data-i18n="dn_tasks">📋 Tasks & calendar</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/codex.md" target="_blank" rel="noopener" data-i18n="dn_codex">🧑‍💻 Codex</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/library.md" target="_blank" rel="noopener" data-i18n="dn_library">📦 Official plugins</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/teams.md" target="_blank" rel="noopener" data-i18n="dn_teams">👥 Team templates</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/export-import.md" target="_blank" rel="noopener" data-i18n="dn_export">📦 Export / Import</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/editor.md" target="_blank" rel="noopener" data-i18n="dn_editor">🏢 3D Editor</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/ai-features.md" target="_blank" rel="noopener" data-i18n="dg_ai">✨ AI features</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/cli.md" target="_blank" rel="noopener" data-i18n="dn_cli">⌨️ CLI reference</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/updates.md" target="_blank" rel="noopener" data-i18n="dn_updates">🔄 Updates & start-up</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/troubleshooting.md" target="_blank" rel="noopener" data-i18n="dg_trouble">🛠 Troubleshooting</a>
+      <a class="btn ghost sm" href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/sponsors.md" target="_blank" rel="noopener" data-i18n="dn_sponsors">💖 Sponsoring</a>
+    </div>
+    <p class="muted" style="font-size:13px"><a href="https://github.com/bagidea/bagidea-office/tree/main/docs/guide" target="_blank" rel="noopener" data-i18n="dg_all">Browse all guides on GitHub ↗</a></p>
+
+    <h2 id="what" data-i18n="d_what_h">What it is</h2>
+    <p data-i18n="d_what_p">At its heart, BagIdea Office is an operations layer for AI agents — given a place. Instead of a flat list of tasks, you get a spatial, honest view of what your agents are actually doing:</p>
+    <ul>
+      <li data-i18n="d_what_l1">Real Claude Code sessions, spawned with each agent's persona, skills and allowed tools.</li>
+      <li data-i18n="d_what_l2">A CEO → Director → team chain of command you drive by giving orders.</li>
+      <li data-i18n="d_what_l3">Spatialized permission approvals — agents walk to Security for tools you haven't granted.</li>
+      <li data-i18n="d_what_l4">Real project folders, resumable sessions, and self-splitting sub-agents for parallel work.</li>
+    </ul>
+
+    <h2 id="ecosystem" data-i18n="eco_title">Not just agents. An ecosystem.</h2>
+    <p data-i18n="eco_lead">BagIdea Office began as a place to have AI agents as real coworkers. It has been growing into something wider: an environment where agents learn, adapt, work together — and grow their own capabilities.</p>
+    <ul>
+      <li><b data-i18n="eco_p1_h">A team, not a model</b> — <span data-i18n="eco_p1_p">One office holds many agents with different roles, skills, tools — and even different brains. They coordinate, hand work off, split into ghost clones for parallel work, hold meetings and report back up the chain. You don't have an AI; you have a team of AI that works together.</span></li>
+      <li><b data-i18n="eco_p2_h">Knowledge that compounds</b> — <span data-i18n="eco_p2_p">Agents accumulate knowledge from the work itself — shared office notes, per-agent memory written automatically after real work, workflows saved as reusable skills, and an archive any agent can search. One project creates knowledge the next project can use, so the office doesn't start from zero every time.</span></li>
+      <li><b data-i18n="eco_p3_h">It extends itself</b> — <span data-i18n="eco_p3_p">When an agent finds that the capabilities it has aren't enough for the job, it doesn't have to stop — it can propose a tool or a plugin, and with your approval that capability becomes a real part of the running office. The idea shifts from AI that uses tools to AI that can propose new tools and capabilities for itself.</span></li>
+      <li><b data-i18n="eco_p4_h">You are still the CEO</b> — <span data-i18n="eco_p4_p">Self-extending doesn't mean unsupervised. Every widening passes a human gate — the Security Center, project-hook trust, and ✅ / ✕ on every proposal, with your reasons. That's also how the team learns what you want next time. The office grows in the direction you keep approving.</span></li>
+    </ul>
+    <pre><code>Goal → Think → Act → Learn → Extend → Collaborate → Repeat</code></pre>
+    <p><a href="https://github.com/bagidea/bagidea-office/blob/main/docs/guide/ecosystem.md" target="_blank" rel="noopener" data-i18n="eco_cta">Read the full story →</a></p>
+
+    <h2 id="concepts" data-i18n="d_concepts_h">Core concepts</h2>
+    <h3 data-i18n="d_c_ceo_h">You are the CEO</h3>
+    <p data-i18n="d_c_ceo_p">The gold seat is you. Type an order and the Director (the main Claude agent) walks over, takes it, plans, and delegates to the team.</p>
+    <h3 data-i18n="d_c_director_h">The Director</h3>
+    <p data-i18n="d_c_director_p">main is Claude itself — the office manager who answers you, creates projects, and routes work with DELEGATE lines.</p>
+    <h3 data-i18n="d_c_ghost_h">Ghosts (sub-agents)</h3>
+    <p data-i18n="d_c_ghost_p">When a job parallelizes, an agent splits into translucent clones that work on the Ghost Deck and merge back with a synthesis.</p>
+    <h3 data-i18n="d_c_grid_h">The room grid</h3>
+    <p data-i18n="d_c_grid_p">The floor is a 3×3 jigsaw of identical rooms; any room fits any slot, so you can rearrange the whole office in the editor.</p>
+
+    <h2 id="install-win" data-i18n="d_install_h">Installation</h2>
+    <div class="note" data-i18n="d_install_plat">Platform support: Windows 11 (stable, wallpaper embedding uses the WorkerW technique), macOS 13+ (beta, DYLD shim), and Linux (experimental — X11 EWMH desktop attach; Wayland falls back to a fullscreen window pinned below).</div>
+    <h3 data-i18n="d_install_win_h">Windows — one-shot installer (recommended)</h3>
+    <p data-i18n="d_install_win_p">Open PowerShell and run the command below — this is the recommended, most reliable path. It installs the dependencies (Git, Node LTS, Godot 4.6.3, Claude Code CLI) and downloads a prebuilt app, so a normal install needs no Visual Studio C++ Build Tools or Rust (those are only a source-build fallback). It clones the app to %LOCALAPPDATA%\BagIdeaOffice, brands the window icon, adds bagidea to your PATH, and creates a Start Menu shortcut. Safe to re-run — each step skips what's already done. No winget? It still works (Git and Node download directly).</p>
+    <pre><code>irm https://raw.githubusercontent.com/bagidea/bagidea-office/main/installer/install.ps1 | iex</code></pre>
+
+    <h3 id="install-mac" data-i18n="d_install_mac_h">macOS — one-shot installer (beta)</h3>
+    <p data-i18n="d_install_mac_p">Open Terminal and run the command below. It installs the dependencies (Git, Node, Rust, Godot, Claude Code CLI), clones the app to ~/BagIdeaOffice, builds the desktop shell and the wallpaper-embed shim, wires the Claude hooks, and sets up the bagidea command. Safe to re-run.</p>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/bagidea/bagidea-office/main/installer/install-mac.sh | bash</code></pre>
+
+    <h3 id="install-linux" data-i18n="d_install_lin_h">Linux — one-shot installer (experimental 🧪)</h3>
+    <p data-i18n="d_install_lin_p">Ubuntu/Debian (apt) for now. Open a terminal and run the command below. It installs the dependencies (Node 20, Rust, Git, WebKitGTK, GTK, wmctrl/xdotool, PulseAudio utils, Godot 4.6.3), builds the desktop shell, wires the Claude hooks, symlinks bagidea into ~/.local/bin, and adds an XDG autostart entry. On X11/Xorg the office attaches as the real desktop wallpaper; on Wayland it falls back to a fullscreen window pinned below everything. Please report problems with your distro, desktop, and the output of "echo $XDG_SESSION_TYPE".</p>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/bagidea/bagidea-office/main/installer/install-linux.sh | bash</code></pre>
+
+    <h3 data-i18n="inst_npx_h">Prefer npm? (optional)</h3>
+    <p data-i18n="inst_npx_p">Already have Node? This is just a thin wrapper that runs the same one-shot installer for your platform — no need to run both.</p>
+    <pre><code>npx bagidea</code></pre>
+
+    <h3 id="install-manual" data-i18n="d_install_manual_h">Manual build</h3>
+    <p data-i18n="d_install_manual_p">Clone the repository, point the Claude hook paths at your clone, then build the Rust shell:</p>
+    <pre><code>git clone https://github.com/bagidea/bagidea-office.git
+cd bagidea-office\shell
+cargo build --release   # → shell/target/release/bagidea-office-shell.exe</code></pre>
+
+    <h3 id="install-first" data-i18n="d_install_first_h">First run</h3>
+    <p data-i18n="d_install_first_p">Pick a brain and go — Claude login is optional. Agents can run on GLM, DeepSeek, Qwen, Kimi and more with just that provider's API key in Settings; log in to Claude only if you use Claude models. Start the office and your wallpaper becomes the live office; a chat head and tray icon appear.</p>
+    <pre><code>claude          # sign in (first time only)
+bagidea start   # launch the office</code></pre>
+
+    <h3 id="install-fix" data-i18n="d_install_fix_h">If the install fails</h3>
+    <p data-i18n="d_install_fix_p">The installer is built to finish on a bare machine, but here are the common snags and their fixes. Almost all are solved by opening a NEW terminal and re-running the installer — re-runs are safe and keep your data.</p>
+    <ul class="fixlist">
+      <li data-i18n-html="d_install_fix_l1"></li>
+      <li data-i18n-html="d_install_fix_l2"></li>
+      <li data-i18n-html="d_install_fix_l3"></li>
+      <li data-i18n-html="d_install_fix_l4"></li>
+      <li data-i18n-html="d_install_fix_l5"></li>
+      <li data-i18n-html="d_install_fix_l6"></li>
+    </ul>
+
+    <h2 id="chat" data-i18n="d_using_h">Using it</h2>
+    <h3 data-i18n="d_chat_h">Chat & the CEO</h3>
+    <p data-i18n="d_chat_p">The chat panel opens on your CEO seat. Type an order in the CEO seat and the Director walks over to take it, plans, and delegates — you watch the hand-offs on the wallpaper, and the summary is walked back to you. To talk to any agent directly, click their face in the rail or on the live map. Every conversation is a resumable thread with full history.</p>
+    <img src="img/overlay.png" alt="The chat overlay">
+
+    <h3 id="projects" data-i18n="d_projects_h">Projects</h3>
+    <p data-i18n="d_projects_p">Register real folders as projects (with PLACE shorthands like "classroom → D:\Learning"). The Director can create new projects himself and route work into them; the assignee's Claude session runs inside that directory and is resumable. One occupant at a time: while an agent works a project you can't open it (a ⏹ stop-agent button with a two-click confirm lets you take over), and while you have it open an agent won't enter.</p>
+    <img src="img/projects.png" alt="The projects panel">
+    <img src="img/org.png" alt="The auto org chart">
+    <p data-i18n="d_org_p">The whole roster arranges itself into an org chart (🗂 → ORG): CEO → Director → mid → staff. Hire from ⚙ → AGENTS: name, role, avatar + aura, tier, a Persona Copilot that fills the prompt and picks fitting skills + tools, one of 16 voices, and the exact tools each agent may run.</p>
+
+    <h3 id="security" data-i18n="d_security_h">Permissions</h3>
+    <p data-i18n="d_security_p">Tools you grant in an agent's profile run silently — and the agent never even leaves its desk. For anything else, the agent walks to the Security Center and waits while a card pops up with the exact command. Choose Allow, ✓✓ Forever (remembers the grant), or Deny. No answer in 50 seconds auto-denies and the agent re-plans.</p>
+    <p data-i18n="d_trust_p">A project can also carry its own .claude hooks — commands that run the moment a session opens in that folder, before the model acts. So registering a folder is not consent to run the code it ships: a project with its own hooks raises a card listing the literal commands, and the work is parked until you answer. Approval is bound to that exact setup, so editing the settings file or the script a hook calls asks again. From the terminal: bagidea trust.</p>
+
+    <h3 id="auto" data-i18n="d_auto_h">Keep going without you (AUTO)</h3>
+    <p data-i18n="d_auto_p">By default, an agent that reaches a fork stops to ask your opinion and the job waits until you answer. Turn AUTO on (⚙ → TOOLS, or bagidea auto on) and it decides for itself and opens its own next turn until the work is genuinely finished — at most 8 self-driven rounds per job, each announced in chat. It still stops for a credential it cannot get, or an action that cannot be undone (push, deploy, delete, spend), and that block is pushed to your channels. Scheduled jobs run as real orders too. AUTO removes the wait for an opinion; what an agent may do is still the separate 🔓 auto-approve switch.</p>
+
+    <h3 id="where" data-i18n="d_where_h">Where agents run</h3>
+    <p data-i18n="d_where_p">By default every agent runs on the machine the office is on. ⚙ → TOOLS → 📦 RUN LOCATION points the whole office — or one agent — somewhere else: a throwaway Docker container, or another machine over SSH. A container gets exactly two mounts, the office root at /office read-only and the working directory at /work, and API keys are passed by name, so the values travel in Docker’s own environment and never appear in a process listing. The image must have the claude CLI on its PATH — the office does not install it for you. And a backend that cannot be built correctly is refused, not quietly downgraded, above all when the settings file that installs the permission broker cannot be placed: a run that loses it works fine with nobody watching.</p>
+    <h3 id="ghostiso" data-i18n="d_ghostiso_h">Ghosts that don’t overwrite each other</h3>
+    <p data-i18n="d_ghostiso_p">Ghost clones have always shared one directory, and two of them editing one file is not a race careful prompting wins. ⚙ → TOOLS → 👻 GHOST ISOLATION gives each ghost its own git worktree on a project that is a git repository: both succeed, their work comes back as office/ghost-&lt;id&gt; branches for you to review, a ghost that changed nothing leaves no directory and no branch, and your working copy is never touched — not even to stash. It is off by default, because turning it on moves where a ghost’s edits land.</p>
+    <h3 id="recall" data-i18n="d_recall_h">Recall by meaning, not only by words</h3>
+    <p data-i18n="d_recall_p">What decides which memory a session sees is a search over everything the office knows, and that search matches words — BM25, no dependencies, offline. It is fast and often enough, and it has one blind spot: ask “why did the wallpaper vanish” and a note reading “WorkerW teardown kills the embedded world” shares no meaningful token with the question, so however good that note is, it does not come back. ⚙ → SKILLS → 🔎 SEMANTIC RECALL points the office at any OpenAI-shaped /embeddings endpoint — a local Ollama is the recommended setup, because it costs nothing and your memory never leaves the machine — and fuses the two rankings so words and meaning each get a say. It is off until you turn it on, saving tests the endpoint and reports the vector size, and if the endpoint later goes down recall quietly returns to matching words rather than failing.</p>
+    <h3 id="editor" data-i18n="d_editor_h">The 3D Editor</h3>
+    <p data-i18n="d_editor_p">Open the editor (the 🎨 button or bagidea editor) to rearrange the office in true 3D: click two rooms to swap them on the 3×3 grid, move the Ghost Deck, place furniture and decor, and import your own .glb/.gltf/.fbx models and images. Save and the wallpaper updates instantly — furniture, agent seats, navigation and pets all follow.</p>
+    <img src="img/editor.png" alt="The 3D Office Editor">
+
+    <h3 id="voice" data-i18n="d_voice_h">Voice & channels</h3>
+    <p data-i18n="d_voice_p">Hold Right Ctrl anywhere to speak a command to the office. Give agents one of 16 TTS voices (split clearly ♀/♂). Call the main agent for a realtime voice conversation (Gemini Live) in its assigned voice. Connect Telegram, Discord, LINE, Slack, Feishu/Lark, WhatsApp or Messenger and command your office from your phone — replies come back on the same channel.</p>
+
+    <h3 id="updates" data-i18n="d_updates_h">Updates &amp; start-up</h3>
+    <p data-i18n="d_updates_p">A VERSION file marks real releases: the office only shows the 🔄 update banner when main's version is newer than yours, so routine commits never nag you. Click the banner or run bagidea update to pull, rebuild and relaunch (your data is kept). Set it to launch with Windows from the tray, settings, or bagidea startup on.</p>
+
+    <h2 id="brains" data-i18n="d_brain_h">Swappable brains (any model)</h2>
+    <p data-i18n-html="d_brain_p">Run each agent on its own model. Claude Code stays the engine — only the brain behind it swaps, and it fails open to Claude, so nothing changes until you opt an agent in. <b>No LiteLLM or Python to install</b> — a translation proxy is built into the daemon.</p>
+    <ul>
+      <li data-i18n-html="d_brain_direct"><b>Direct (Anthropic-compatible):</b> Claude · GLM (Z.AI) · DeepSeek · Qwen (Alibaba) · MiniMax · Kimi (Moonshot) · Kimi Code</li>
+      <li data-i18n-html="d_brain_proxy"><b>Via the built-in proxy (OpenAI-compatible):</b> OpenAI · Gemini · OpenRouter · NVIDIA · Groq · Cerebras · xAI (Grok) · Mistral · Together · Fireworks — plus <b>local Ollama / LM Studio with no API key</b>. Pickers fetch each provider's live model list.</li>
+      <li data-i18n-html="d_brain_custom"><b>Custom providers:</b> add your own — name + Base URL + key, Anthropic- or OpenAI-style (point it at a LiteLLM gateway if you run one).</li>
+    </ul>
+    <img src="img/brains-connect.png" alt="Connect providers in CONNECT → MODELS/PROVIDERS">
+    <img src="img/swappable-brains.png" alt="Pick a provider and model per agent, with a context-usage meter">
+    <p data-i18n-html="d_brain_setup"><b>Set it up:</b> ⚙ CONNECT → 🧠 MODELS/PROVIDERS → paste a key → Connect (✅). Then ✏️ edit an agent → 🧠 Brain → pick provider + model (a working default is auto-selected) → Save.</p>
+    <p data-i18n-html="d_brain_free"><b>Free to try, with limits:</b> NVIDIA build is free but rate-limited (~40 req/min); OpenRouter has free <code>:free</code> models that are daily-capped (use <code>vendor/model</code> ids); Gemini has a generous free quota; OpenAI Tier 1 (30k tokens/min) is small for heavy agent work.</p>
+    <p data-i18n-html="d_brain_compact"><b>Auto-compact + auto-new-thread — for every model.</b> Long chats never clog: before each turn the office measures the thread against the model's context window and, if it's filling up, summarizes it with Claude and continues on a fresh thread — recovering the same way if a backend rejects a too-big request. Continuity is preserved (the summary is Claude-written) and the view follows you to the new thread.</p>
+    <p data-i18n-html="d_brain_monitor"><b>Monitor it:</b> every message is tagged with its model, the thread bar shows a live context meter (e.g. <code>gpt-4o · 40k/128k</code>), the 🧠 BRAINS panel tracks every provider + agent, and STATS estimates per-provider spend.</p>
+    <img src="img/brains-chat.png" alt="Chat tagged with the model and a context-usage meter in the thread bar">
+
+    <h2 id="plugins" data-i18n="d_plugins_h">Plugins, skills & tools</h2>
+    <p data-i18n="d_plugins_p">Plugins extend the office for real — a folder with a manifest can add UI panels, HTTP routes, and commands agents can drive, with ctx access to the registry, feed, broadcasting and even running Claude turns. Two core plugins ship in the box (🎵 Music Player, 🧮 Calculator); install more from any GitHub repo. Start from the official template, or read the worked example repos.</p>
+    <img src="img/plugins.png" alt="The plugins panel listing installed plugins, with install-from-GitHub">
+    <img src="img/briefing.png" alt="A morning briefing rendered inside a plugin panel">
+    <pre><code>bagidea plugin install https://github.com/bagidea/bagidea-office-template</code></pre>
+    <p data-i18n="d_skills_p">Every office ships with 15 builtin skill packs — deep research, web automation, office control, office operations, plugin building, code review, doc writing, debugging, data wrangling, project kickoff, diagram making, archive recall, workflow building, a file &amp; media toolkit (read/convert PDF·Excel·Word·PowerPoint, build slide decks, transcribe video, edit images), and office-scheduled jobs — that you can assign to any agent, plus Hermes-style skills the office learns automatically after real work. Add new raw capability via MCP servers.</p>
+
+    <h3 data-i18n="d_selfskill_h">Skills that correct themselves</h3>
+    <p data-i18n="d_selfskill_p">After a real multi-tool task, a reflection pass decides whether the work distills into a reusable skill. Since v1.0.0 the same pass can also correct a skill it wrote earlier, and it runs after failures too — the strongest evidence a skill is wrong, and previously the one case that was thrown away. It never touches a built-in and never touches a skill you edited by hand, and the previous version is kept, so a correction can be undone.</p>
+    <h2 id="tools" data-i18n="d_tools_h">The Tools Hub</h2>
+    <p data-i18n="d_tools_p">⋯ → 🧰 Tools Hub is a browsable catalog of 43 entries: the 15 abilities every agent already has, and 28 MCP servers you can add with one click — browser automation, GitHub, Notion, Slack, Postgres, and a creative shelf with Blender, Godot, Unity, Unreal Engine and Roblox Studio. Every card carries a plain-language risk line, because a search server and a database server are not the same question, and adding a server to the office stays a separate step from granting it to an agent. The catalog is a file the office fetches live, so a renamed package is a pull request rather than a release.</p>
+    <h2 id="media" data-i18n="d_media_h">Media Studio</h2>
+    <p data-i18n="d_media_p">⋯ → Media Studio opens the office’s media room: make a picture, change one, then make it move — in one window, because the work is iterative. An edit never overwrites its input; you always get a new file and the result becomes the selection, so a second instruction refines the first rather than starting over. Everything lands in workspace/uploads, so it shows in chat straight away. Agents can make and change pictures; only you can make video, because a clip costs around $2 and the button says the price next to it.</p>
+    <h2 id="workflow" data-i18n="d_wf_h">Workflow Builder</h2>
+    <p data-i18n="d_wf_p">Plan work as plain-language nodes on a drag-drop canvas (⋯ menu → Workflow Builder) — each node is a step (trigger / fetch / action / decision / output) and the flow reads top to bottom. Press <b>Analyze</b> and the Director reads your plan and tells you which skills and tools it needs, what permissions or extra agents to add, and what's still undecided — so you can plan work even if you don't know how to instruct it, and let the team work out the execution.</p>
+    <ol>
+      <li data-i18n-html="d_wf_1"><b>Add nodes & write in plain language.</b> e.g. “every morning summarize AI news, then send it to Telegram”. Drag cards to order the flow top→bottom.</li>
+      <li data-i18n-html="d_wf_2"><b>Analyze.</b> The Director returns a plan: needed skills/tools, permissions/agents to set up, and open questions. (This release plans only — it doesn't auto-run yet.)</li>
+      <li data-i18n-html="d_wf_3"><b>Save & reuse.</b> Workflows are stored under workspace/workflows. Three example workflows ship in the box to learn from.</li>
+    </ol>
+
+    <h2 id="lang" data-i18n="d_lang_h">Languages</h2>
+    <p data-i18n="d_lang_p">The whole interface supports 15 languages. English is the default; pick another in settings and the office translates office-wide (and remembers your choice per machine). This website speaks the same 15 languages — use the picker in the top bar.</p>
+    <p><span class="tag">en</span> <span class="tag">ไทย</span> <span class="tag">中文</span> <span class="tag">Español</span> <span class="tag">हिन्दी</span> <span class="tag">العربية</span> <span class="tag">Português</span> <span class="tag">Русский</span> <span class="tag">日本語</span> <span class="tag">Deutsch</span> <span class="tag">Français</span> <span class="tag">한국어</span> <span class="tag">Indonesia</span> <span class="tag">Tiếng Việt</span></p>
+
+    <h2 id="sponsors" data-i18n="d_sponsors_h">Sponsoring</h2>
+    <p data-i18n="d_sponsors_p">BagIdea Office is free and open source; sponsorship funds development, art licenses and cross-platform backends. It is a recurring monthly subscription run entirely by GitHub Sponsors (like a YouTube or Patreon membership) — secure payments, tax and payouts are GitHub's job, not ours. Four monthly tiers: 💛 Supporter ($5), 🥉 Bronze / Backer ($30), 🥈 Silver Partner ($300), 👑 Gold Partner ($3,000).</p>
+    <ol>
+      <li data-i18n-html="d_sponsors_1"><b>Choose a tier &amp; sponsor.</b> Use the “💖 Sponsor on GitHub” button on the site (or github.com/sponsors/bagidea), pick a monthly tier, and confirm — GitHub charges you each month until you cancel.</li>
+      <li data-i18n-html="d_sponsors_2"><b>Your logo &amp; link come from your GitHub profile — automatically.</b> Your avatar, display name and link are pulled straight from your GitHub account; there is nothing to send us. To control the link, set the <b>Website</b> field in your GitHub profile (Settings → Public profile). Sponsoring as a GitHub Organization shows your company logo and site.</li>
+      <li data-i18n-html="d_sponsors_3"><b>You appear within ~6 hours.</b> As long as you choose “Make my sponsorship public” at checkout, an automated workflow pulls the live list, maps each sponsor to a tier by amount, and updates the supporters wall on the website and the README — sorted by tier, amounts never shown. Private sponsors are respected and not listed.</li>
+    </ol>
+    <p class="muted" data-i18n="d_sponsors_note">Everyone joins through GitHub Sponsors. The only exceptions are featured partners added by hand (e.g. WARRIX, pinned first); Reuannamphung is shown as a courtesy until they move to GitHub Sponsors.</p>
+
+    <h2 id="cli" data-i18n="d_cli_h">CLI reference</h2>
+    <p data-i18n="d_cli_p">The installer puts bagidea on your PATH. It talks to the running office and can start it. A few highlights:</p>
+    <table>
+      <tr><th>Command</th><th>Does</th></tr>
+      <tr><td><code>bagidea start | stop | restart</code></td><td>Launch / stop / restart the whole suite</td></tr>
+      <tr><td><code>bagidea status</code></td><td>Health + agents + projects + who's working</td></tr>
+      <tr><td><code>bagidea stats</code></td><td>Dashboard: runs / cost / busiest / uptime</td></tr>
+      <tr><td><code>bagidea ask "&lt;message&gt;"</code></td><td>Order the Director and wait for the final answer</td></tr>
+      <tr><td><code>bagidea chat &lt;agent&gt; "&lt;msg&gt;"</code></td><td>Hand a task to a specific agent (fire-and-forget)</td></tr>
+      <tr><td><code>bagidea agents · projects</code></td><td>List staff / projects with live status</td></tr>
+      <tr><td><code>bagidea open "&lt;project&gt;"</code></td><td>Open a project window (same as ▶)</td></tr>
+      <tr><td><code>bagidea proposals</code></td><td>Team project pitches awaiting a verdict</td></tr>
+      <tr><td><code>bagidea proposal show &lt;id&gt;</code></td><td>Read a pitch in full</td></tr>
+      <tr><td><code>bagidea proposal approve|reject &lt;id&gt; [note]</code></td><td>Decide on a pitch (+ optional note to the team)</td></tr>
+      <tr><td><code>bagidea plugins</code></td><td>List installed plugins</td></tr>
+      <tr><td><code>bagidea plugin install &lt;git-url&gt; · remove &lt;id&gt;</code></td><td>Add / remove a plugin</td></tr>
+      <tr><td><code>bagidea lang &lt;code&gt;</code></td><td>Show / set the office language (14 languages)</td></tr>
+      <tr><td><code>bagidea say "&lt;text&gt;" · voices</code></td><td>Speak via TTS · list voice presets</td></tr>
+      <tr><td><code>bagidea image "&lt;prompt&gt;"</code></td><td>Generate an AI image into the office</td></tr>
+      <tr><td><code>bagidea channels · keys</code></td><td>Channel + API-key status</td></tr>
+      <tr><td><code>bagidea feed</code></td><td>Live office event stream in your terminal</td></tr>
+      <tr><td><code>bagidea editor</code></td><td>Open the 3D Office Editor</td></tr>
+      <tr><td><code>bagidea auto [on|off]</code></td><td>🤖 Keep-going mode — the team decides and finishes without waiting on you</td></tr>
+      <tr><td><code>bagidea trust [allow|deny] "&lt;project&gt;"</code></td><td>🛡 Projects whose own .claude hooks are waiting on your word</td></tr>
+      <tr><td><code>bagidea eco [on|off]</code></td><td>🌱 Eco mode — cut idle token burn (rhythms stretch, QA pass off)</td></tr>
+      <tr><td><code>bagidea export [file]</code></td><td>Pack agents · skills · memory · plugins into one .tgz</td></tr>
+      <tr><td><code>bagidea import &lt;file&gt;</code></td><td>Restore an exported office on this machine</td></tr>
+      <tr><td><code>bagidea startup [on|off]</code></td><td>Launch the office with Windows (show / set)</td></tr>
+      <tr><td><code>bagidea update · version</code></td><td>Update to the latest release · show current version</td></tr>
+      <tr><td><code>bagidea --help · --version</code></td><td>Full command list / current build</td></tr>
+    </table>
+    <img src="img/cli.png" alt="bagidea CLI help">
+
+    <h3 id="migrate" data-i18n="d_migrate_h">Move to a new machine</h3>
+    <p data-i18n="d_migrate_p">Moving to a new machine? <code>bagidea export</code> packs your whole office — agents, skills, memory, projects, plugins — into one file. Install BagIdea Office on the new machine and run <code>bagidea import</code> to bring the same team back.</p>
+
+    <h2 id="faq" data-i18n="d_faq_h">FAQ</h2>
+    <h3 data-i18n="d_faq_q1">Does it cost money to run?</h3>
+    <p data-i18n="d_faq_a1">The app is free and open source (MIT). Agents run through your own Claude Code login, so usage follows your existing Claude account or subscription — there is no separate BagIdea fee.</p>
+    <h3 data-i18n="d_faq_q2">Is my code/data sent anywhere?</h3>
+    <p data-i18n="d_faq_a2">The daemon runs locally on 127.0.0.1. Agents are Claude Code sessions, so they use Claude like any Claude Code project. Optional features (voice, image, realtime) use your own OpenAI/Gemini keys only when you enable them.</p>
+    <h3 data-i18n="d_faq_q3">Which platforms are supported?</h3>
+    <p data-i18n="d_faq_a3">Windows 11, macOS 13+ (beta), and Linux (experimental) today.</p>
+    <h3 data-i18n="d_faq_q4">Can I build my own plugin?</h3>
+    <p data-i18n="d_faq_a4">Yes — fork the official template repo. A person or an agent can build a working plugin from it in minutes; the full spec is in the plugin guide.</p>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="copyright" data-i18n="copyright">© 2026 BagIdea Innovation Co., Ltd. · MIT-licensed open source.</div>
+  </div>
+</footer>
+
+<a href="#" class="toplink" aria-label="Back to top">↑</a>
+<script>
+  const topBtn = document.querySelector(".toplink");
+  addEventListener("scroll", () => topBtn.classList.toggle("show", scrollY > 600));
+  // highlight the active doc section in the sidebar
+  const links = [...document.querySelectorAll(".docnav a[href^='#']")];
+  const map = links.map((a) => ({ a, el: document.querySelector(a.getAttribute("href")) })).filter((x) => x.el);
+  addEventListener("scroll", () => {
+    let cur = map[0];
+    for (const m of map) if (m.el.getBoundingClientRect().top <= 90) cur = m;
+    links.forEach((a) => a.classList.toggle("active", cur && a === cur.a));
+  });
+</script>
+</body>
+</html>

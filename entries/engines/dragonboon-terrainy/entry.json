@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:38:46Z",
+ "category": "engines",
+ "commit": "2026-10-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Dragonboon/Terrainy \u2014 Quickly create natural-looking terrain with customizable noise parameters. This tool is designed to create simple terrains that do not require manual painting",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Terrainy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dragonboon-terrainy",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 248,
+ "system": "Quickly create natural-looking terrain with customizable noise parameters. This tool is designed to create simple terrains that do not require manual painting",
+ "upstream": "https://github.com/Dragonboon/Terrainy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

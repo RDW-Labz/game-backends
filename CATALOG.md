@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 15:38 UTC · 1996 entries · 505 vendored, 1491 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 820 | 198 | 622 |
+| [engines](#engines) — Game engines and engine subsystems | 825 | 200 | 625 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 820 entries
+**Game engines and engine subsystems** — 825 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -69,6 +69,7 @@ _Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Babylon.js](entries/engines/babylonjs-babylon-js/README.md) | Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework. | typescript | Apache-2.0 | reference | [BabylonJS/Babylon.js](https://github.com/BabylonJS/Babylon.js) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Bacon2D](entries/engines/bacon2d-bacon2d/README.md) | Bacon2D is a framework to ease 2D game development, providing ready-to-use QML elements representing basic game entities needed by most of games. | c++ | MIT | reference | [Bacon2D/Bacon2D](https://github.com/Bacon2D/Bacon2D) @ `2019-12-16 (branch tip at catalogue time)` |
+| [bagidea-office](entries/engines/bagidea-bagidea-office/README.md) | A living AI-agent office on your desktop wallpaper — Claude Code agents that walk, work, delegate, learn & hold meetings. Per-agent swappable models (Claude/GLM | javascript | MIT | vendored | [bagidea/bagidea-office](https://github.com/bagidea/bagidea-office) @ `1f45540b1a05` |
 | [ballistica](entries/engines/efroemling-ballistica/README.md) | The BombSquad Game Engine | python | unknown | reference | [efroemling/ballistica](https://github.com/efroemling/ballistica) @ `2026-11-22 (branch tip at catalogue time)` |
 | [BananaBread](entries/engines/kripken-bananabread/README.md) | BananaBread is a C++ 3D game engine that runs on the web using JavaScript+WebGL+HTML | c++ | Zlib | vendored | [kripken/BananaBread](https://github.com/kripken/BananaBread) @ `455191d2e289` |
 | [bang](entries/engines/isadorasophia-bang/README.md) | Entity Component System (ECS) framework made in C#. | c# | MIT | reference | [isadorasophia/bang](https://github.com/isadorasophia/bang) @ `2026-11-10 (branch tip at catalogue time)` |
@@ -331,6 +332,7 @@ _Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-
 | [go-staticmaps](entries/engines/flopp-go-staticmaps/README.md) | A go (golang) library and command line tool to render static map images using OpenStreetMap tiles. | go | MIT | vendored | [flopp/go-staticmaps](https://github.com/flopp/go-staticmaps) @ `8cdef9842aeb` |
 | [Go2D](entries/engines/pikedev-go2d/README.md) | GoLang 2D Game Library based on SDL 1.3. This can be used to easily write games using Go (www.golang.org) using SDL 1.3 for hardware-accelerated rendering (Open | go | unknown | reference | [PikeDev/Go2D](https://github.com/PikeDev/Go2D) @ `2011-09-18 (branch tip at catalogue time)` |
 | [godogen](entries/engines/htdt-godogen/README.md) | Skills for Claude Code, Codex and Antigravity to build games, and anything else a game engine renders well | python | MIT | vendored | [htdt/godogen](https://github.com/htdt/godogen) @ `07eaa1d11e82` |
+| [godot](entries/engines/talodev-godot/README.md) | Talo's Godot plugin for open source leaderboards, stats, auth, game saves and more | gdscript | MIT | vendored | [TaloDev/godot](https://github.com/TaloDev/godot) @ `6330dcd3e880` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-2d-space-game](entries/engines/gdquest-demos-godot-2d-space-game/README.md) | A 2D space exploration and mining game made with Godot and our AI framework | gdscript | unknown | reference | [gdquest-demos/godot-2d-space-game](https://github.com/gdquest-demos/godot-2d-space-game) @ `2026-05-16 (branch tip at catalogue time)` |
 | [godot-3d-mannequin](entries/engines/gdquest-demos-godot-3d-mannequin/README.md) | An Open Source 3d character and character controller for the Godot game engine | c# | MIT | vendored | [gdquest-demos/godot-3d-mannequin](https://github.com/gdquest-demos/godot-3d-mannequin) @ `d48a4fdb49a3` |
@@ -390,6 +392,7 @@ _Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-
 | [gravity](entries/engines/thegtproject-gravity/README.md) | 3D OpenGL engine for Go | go | MIT | reference | [thegtproject/gravity](https://github.com/thegtproject/gravity) @ `2022-03-16 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [halley](entries/engines/amzeratul-halley/README.md) | A lightweight game engine written in modern C++ | c | Apache-2.0 | reference | [amzeratul/halley](https://github.com/amzeratul/halley) @ `2026-11-23 (branch tip at catalogue time)` |
+| [hastur-operation-plugin](entries/engines/rayxuln-hastur-operation-plugin/README.md) | A plugin providing ability for executing any code on Godot Editor. So that any coding agent can do any operations with Godot Editor. This version is for GDScrip | python | MIT | reference | [rayxuln/hastur-operation-plugin](https://github.com/rayxuln/hastur-operation-plugin) @ `2026-04-11 (branch tip at catalogue time)` |
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
 | [heerich](entries/engines/meodai-heerich/README.md) | Tiny engine for 3D voxel scenes rendered to SVG — boolean ops, oblique/perspective cameras, zero dependencies. Inspired by the geometric cardboard sculptures of | javascript | MIT | reference | [meodai/heerich](https://github.com/meodai/heerich) @ `2026-11-07 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
@@ -683,6 +686,7 @@ _Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-
 | [SkiaSharp](entries/engines/mono-skiasharp/README.md) | SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used ac | c# | MIT | reference | [mono/SkiaSharp](https://github.com/mono/SkiaSharp) @ `0cd43f16dd4b` |
 | [skylicht-engine](entries/engines/skylicht-lab-skylicht-engine/README.md) | Skylicht Engine is C++ Game Engine based on Irrlicht 3D. And my goal is to create a high-performance and lightweight Game Framework that can seamlessly function | c++ | MIT | reference | [skylicht-lab/skylicht-engine](https://github.com/skylicht-lab/skylicht-engine) @ `d27288111de5` |
 | [SmartShape2D](entries/engines/sirramesq-smartshape2d/README.md) | A 2D Terrain Tool for Godot | gdscript | MIT | vendored | [SirRamEsq/SmartShape2D](https://github.com/SirRamEsq/SmartShape2D) @ `9617190250d0` |
+| [SmoothScroll](entries/engines/spyrexde-smoothscroll/README.md) | Addon for the Godot Game Engine that adds a SmoothScrollContainer. | gdscript | MIT | reference | [SpyrexDE/SmoothScroll](https://github.com/SpyrexDE/SmoothScroll) @ `2026-08-10 (branch tip at catalogue time)` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
 | [soluna](entries/engines/cloudwu-soluna/README.md) | A simple 2d game framework | c | MIT | vendored | [cloudwu/soluna](https://github.com/cloudwu/soluna) @ `6722911e0ac7` |
@@ -718,6 +722,7 @@ _Generated 2026-11-26 15:22 UTC · 1991 entries · 503 vendored, 1488 reference-
 | [terminal_dungeon](entries/engines/salt-die-terminal-dungeon/README.md) | A raycasting library for your terminal! | python | MIT | reference | [salt-die/terminal_dungeon](https://github.com/salt-die/terminal_dungeon) @ `2024-05-06 (branch tip at catalogue time)` |
 | [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |
 | [TerraCraft](entries/engines/retrofloppy77-terracraft/README.md) | Voxel Engine written in Python 3 + Pyglet. | python | GPL-3.0 | reference | [RetroFloppy77/TerraCraft](https://github.com/RetroFloppy77/TerraCraft) @ `2026-11-08 (branch tip at catalogue time)` |
+| [Terrainy](entries/engines/dragonboon-terrainy/README.md) | Quickly create natural-looking terrain with customizable noise parameters. This tool is designed to create simple terrains that do not require manual painting | gdscript | MIT | reference | [Dragonboon/Terrainy](https://github.com/Dragonboon/Terrainy) @ `2026-10-30 (branch tip at catalogue time)` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
 | [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |
 | [theodoric](entries/engines/tlmader-theodoric/README.md) | A 2D top-down "action RPG" built with the Phaser HTML5 game framework | javascript | none | reference | [tlmader/theodoric](https://github.com/tlmader/theodoric) @ `ae447ad8b867` |

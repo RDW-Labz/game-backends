@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T15:38:42Z",
+ "category": "engines",
+ "commit": "1f45540b1a05",
+ "delivery": "vendored",
+ "description": "bagidea/bagidea-office \u2014 A living AI-agent office on your desktop wallpaper \u2014 Claude Code agents that walk, work, delegate, learn & hold meetings. Per-agent swappable models (Claude/GLM/DeepSeek/Qwen/Kimi/OpenAI/Gemini/Groq/Ollama\u2026), workflows, plugins, voice & Telegram/Discord/LINE. Open source.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bagidea-office",
+ "size_bytes": 5264892,
+ "slug": "bagidea-bagidea-office",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 264,
+ "system": "A living AI-agent office on your desktop wallpaper \u2014 Claude Code agents that walk, work, delegate, learn & hold meetings. Per-agent swappable models (Claude/GLM",
+ "upstream": "https://github.com/bagidea/bagidea-office",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
