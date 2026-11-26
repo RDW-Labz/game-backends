@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 265 | 67 | 198 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 271 | 67 | 204 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,13 +1280,14 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 265 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 271 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [04_BattleTank](entries/gameplay/unrealcourse-04-battletank/README.md) | An open-world head-to-head tank fight with simple AI, terrain, and advanced control system in Unreal 4. (ref: BT_URC) http://gdev.tv/urcgithub | c++ | MIT | reference | [UnrealCourse/04_BattleTank](https://github.com/UnrealCourse/04_BattleTank) @ `2020-10-01 (branch tip at catalogue time)` |
 | [A-Pathfinding-Visualization](entries/gameplay/devoncrawford-a-pathfinding-visualization/README.md) | First attempt at an efficient pathfinding algorithm in Java. I made this visualization to show the beauty of pathfinding. You can modify all major features of m | java | MIT | vendored | [DevonCrawford/A-Pathfinding-Visualization](https://github.com/DevonCrawford/A-Pathfinding-Visualization) @ `78ea534858a1` |
 | [A-Star-Pathfinding-for-Platformers](entries/gameplay/tutsplus-a-star-pathfinding-for-platformers/README.md) | How to Adapt A* Pathfinding to a 2D Grid-Based Platformer | c# | BSD-2-Clause | reference | [tutsplus/A-Star-Pathfinding-for-Platformers](https://github.com/tutsplus/A-Star-Pathfinding-for-Platformers) @ `2015-12-29 (branch tip at catalogue time)` |
+| [a-star-search](entries/gameplay/trinhminhtriet-a-star-search/README.md) | A* (A-star) algorithm is a widely used graph traversal and pathfinding algorithm known for its completeness, optimality, and efficiency. | typescript | MIT | reference | [trinhminhtriet/a-star-search](https://github.com/trinhminhtriet/a-star-search) @ `2025-04-11 (branch tip at catalogue time)` |
 | [abstreet — pathfind](entries/gameplay/abstreet-pathfind/README.md) | combat, AI, pathing, quest or inventory logic | rs | Apache-2.0 | vendored | [a-b-street/abstreet](https://github.com/a-b-street/abstreet) @ `0964f29` |
 | [Agentic-Among-Us-](entries/gameplay/darkmatter2222-agentic-among-us/README.md) | Autonomous LLM-driven Among Us simulation with memory, social reasoning, pathfinding, sabotage, emergent behavior, and real-time React/PixiJS visualization. | typescript | unknown | reference | [darkmatter2222/Agentic-Among-Us-](https://github.com/darkmatter2222/Agentic-Among-Us-) @ `2026-09-13 (branch tip at catalogue time)` |
 | [Aim-IK](entries/gameplay/ehsan-mohammadi-aim-ik/README.md) | A Unity package, to procedurally orientate the character's head (and spine) in a direction without using any animation data. | c# | MIT | reference | [ehsan-mohammadi/Aim-IK](https://github.com/ehsan-mohammadi/Aim-IK) @ `2022-08-16 (branch tip at catalogue time)` |
@@ -1300,6 +1301,7 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 | [AStar](entries/gameplay/bigzaphod-astar/README.md) | C Implementation of the A* Pathfinding Algorithm | c | unknown | reference | [BigZaphod/AStar](https://github.com/BigZaphod/AStar) @ `2017-04-16 (branch tip at catalogue time)` |
 | [astar](entries/gameplay/devlsh-astar/README.md) | A* pathfinding for 2D grids with elevation support. | typescript | MIT | vendored | [devlsh/astar](https://github.com/devlsh/astar) @ `a762ddacd958` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
+| [AStar-Process](entries/gameplay/anseyuyin-astar-process/README.md) | A* Pathfinding Algorithm process demo | typescript | MIT | reference | [anseyuyin/AStar-Process](https://github.com/anseyuyin/AStar-Process) @ `2019-11-27 (branch tip at catalogue time)` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
 | [baritone](entries/gameplay/cabaletta-baritone/README.md) | google maps for block game | java | LGPL-3.0 | reference | [cabaletta/baritone](https://github.com/cabaletta/baritone) @ `2264210f943d` |
@@ -1412,6 +1414,7 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 | [Mindustry — abilities](entries/gameplay/mindustry-abilities/README.md) | combat, AI, pathing, quest or inventory logic | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mindustry — ai](entries/gameplay/mindustry-core-src-mindustry-ai/README.md) | unit AI and pathfinding | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
 | [Mindustry — entities](entries/gameplay/mindustry-core-src-mindustry-entities/README.md) | entity/unit/bullet systems for a shipped RTS | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
+| [minecraft-pathfinding](entries/gameplay/minecraft-pathfinding-minecraft-pathfinding/README.md) | see upstream | typescript | none | reference | [Minecraft-Pathfinding/minecraft-pathfinding](https://github.com/Minecraft-Pathfinding/minecraft-pathfinding) @ `c9d0d3857d52` |
 | [mineflayer-pathfinder](entries/gameplay/prismarinejs-mineflayer-pathfinder/README.md) | Pathfinding plugin that gives bot the ability to go from A to B | javascript | MIT | reference | [PrismarineJS/mineflayer-pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) @ `2026-11-14 (branch tip at catalogue time)` |
 | [Mini-Inventory-and-Sales-Management-System](entries/gameplay/amirsanni-mini-inventory-and-sales-management-system/README.md) | An Inventory and Sales Management System written in PHP (codeIgniter) with support for MySQL and Sqlite3 databases | php | MIT | reference | [amirsanni/Mini-Inventory-and-Sales-Management-System](https://github.com/amirsanni/Mini-Inventory-and-Sales-Management-System) @ `2026-11-18 (branch tip at catalogue time)` |
 | [mistreevous](entries/gameplay/nikkorn-mistreevous/README.md) | A tool to build and execute behaviour trees in JavaScript and TypeScript | typescript | MIT | vendored | [nikkorn/mistreevous](https://github.com/nikkorn/mistreevous) @ `026f1ffe0623` |
@@ -1443,6 +1446,7 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 | [pathfinding](entries/gameplay/npretto-pathfinding/README.md) | Visual explanation of pathfinding algorithms and how a*, Dijkstra and BFS can be seen as the same algorithm with different parameter/data structures used under  | javascript | unknown | reference | [npretto/pathfinding](https://github.com/npretto/pathfinding) @ `2022-01-09 (branch tip at catalogue time)` |
 | [Pathfinding](entries/gameplay/seblague-pathfinding/README.md) | see upstream | c# | MIT | vendored | [SebLague/Pathfinding](https://github.com/SebLague/Pathfinding) @ `b938872d12bb` |
 | [pathfinding-lab](entries/gameplay/rvhuang-pathfinding-lab/README.md) | Run, test and compare all algorithms and heuristic functions | typescript | MIT | vendored | [rvhuang/pathfinding-lab](https://github.com/rvhuang/pathfinding-lab) @ `3bbe6bc31d66` |
+| [pathfinding-visualizer](entries/gameplay/brpapa-pathfinding-visualizer/README.md) | 🔍 A friendly visualizer for some search algorithms like DFS, BFS, Greedy and A* | typescript | MIT | reference | [brpapa/pathfinding-visualizer](https://github.com/brpapa/pathfinding-visualizer) @ `2020-07-24 (branch tip at catalogue time)` |
 | [Pathfinding-Visualizer](entries/gameplay/clementmihailescu-pathfinding-visualizer/README.md) | A visualization tool for various pathfinding algorithms. | css | unknown | reference | [clementmihailescu/Pathfinding-Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer) @ `2023-09-23 (branch tip at catalogue time)` |
 | [Pathfinding-Visualizer](entries/gameplay/itausi-pathfinding-visualizer/README.md) | Pathfinding visualizations with Python and Pygame | python | MIT | vendored | [itausi/Pathfinding-Visualizer](https://github.com/itausi/Pathfinding-Visualizer) @ `9925c51d0e07` |
 | [pathfinding-visualizer](entries/gameplay/princhcanal-pathfinding-visualizer/README.md) | see upstream | typescript | none | reference | [princhcanal/pathfinding-visualizer](https://github.com/princhcanal/pathfinding-visualizer) @ `eaf2556eeb8f` |
@@ -1452,6 +1456,7 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 | [Pathfinding-Visualizer-Tutorial](entries/gameplay/clementmihailescu-pathfinding-visualizer-tutorial/README.md) | Tutorial for my original Pathfinding Visualizer project. | javascript | unknown | reference | [clementmihailescu/Pathfinding-Visualizer-Tutorial](https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial) @ `2023-03-03 (branch tip at catalogue time)` |
 | [pathfinding.cloud](entries/gameplay/datadog-pathfinding-cloud/README.md) | An AWS IAM Privilege Escalation Path Library | python | Apache-2.0 | reference | [DataDog/pathfinding.cloud](https://github.com/DataDog/pathfinding.cloud) @ `2026-11-16 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
+| [pathfinding_app](entries/gameplay/maciejb2k-pathfinding-app/README.md) | Dijkstra visualized on SVG map of store | typescript | GPL-3.0 | reference | [maciejb2k/pathfinding_app](https://github.com/maciejb2k/pathfinding_app) @ `2023-08-30 (branch tip at catalogue time)` |
 | [Pathfinding_Visualization](entries/gameplay/ngquhuanbl-pathfinding-visualization/README.md) | A ReactJS project visualizes the path-finding algorithms with additional cool features like speed adjustment, maze generation, mobile support, etc. | typescript | unknown | reference | [ngquhuanbl/Pathfinding_Visualization](https://github.com/ngquhuanbl/Pathfinding_Visualization) @ `2021-10-21 (branch tip at catalogue time)` |
 | [phaser-web-workers](entries/gameplay/azerion-phaser-web-workers/README.md) | A simple Phaser plugin that allows you to easily integrate Web Workers in your game | typescript | MIT | vendored | [azerion/phaser-web-workers](https://github.com/azerion/phaser-web-workers) @ `a7d4ebfde338` |
 | [php-inventory-management-system](entries/gameplay/stemword-php-inventory-management-system/README.md) | Open source inventory management system with php and mysql Invoice generation and easy to download invoice in PDF format Lightweight and easy to use Order manag | php | MIT | vendored | [stemword/php-inventory-management-system](https://github.com/stemword/php-inventory-management-system) @ `862705a9724a` |
@@ -1516,6 +1521,7 @@ _Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [tdme2](entries/gameplay/andreasdr-tdme2/README.md) | TDME2 - ThreeDeeMiniEngine2 is a lightweight, multi-platform 3D engine including tools suited for 3D game/application development using C++, Mini(t)Script, GLSL | c++ | unknown | reference | [andreasdr/tdme2](https://github.com/andreasdr/tdme2) @ `2025-11-08 (branch tip at catalogue time)` |
 | [three-pathfinding](entries/gameplay/donmccurdy-three-pathfinding/README.md) | Navigation mesh utilities for three.js, based on PatrolJS. | javascript | MIT | reference | [donmccurdy/three-pathfinding](https://github.com/donmccurdy/three-pathfinding) @ `2026-10-06 (branch tip at catalogue time)` |
+| [three-pathfinding-3d](entries/gameplay/mryang614-three-pathfinding-3d/README.md) | pathfinding-algorithm fork from three-pathfinding and support 3d | typescript | none | reference | [MrYang614/three-pathfinding-3d](https://github.com/MrYang614/three-pathfinding-3d) @ `b31338351074` |
 | [tile](entries/gameplay/kelindar-tile/README.md) | Tile is a 2D grid engine, built with data and cache friendly ways, includes pathfinding and observers. | go | MIT | reference | [kelindar/tile](https://github.com/kelindar/tile) @ `2025-08-17 (branch tip at catalogue time)` |
 | [traktor](entries/gameplay/apistol78-traktor/README.md) | Traktor Game Engine | c++ | GPL-3.0 | reference | [apistol78/traktor](https://github.com/apistol78/traktor) @ `29b0bf723568` |
 | [triangle-pos](entries/gameplay/fahimanzamdip-triangle-pos/README.md) | Triangle POS is an open source Inventory Management with POS System. Developed with Laravel 10, Bootstrap 4 & Livewire 3. It's completely free to use. | blade | unknown | reference | [FahimAnzamDip/triangle-pos](https://github.com/FahimAnzamDip/triangle-pos) @ `2024-10-16 (branch tip at catalogue time)` |

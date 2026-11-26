@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:14:38Z",
+ "category": "gameplay",
+ "commit": "2023-08-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "maciejb2k/pathfinding_app \u2014 Dijkstra visualized on SVG map of store",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "pathfinding_app",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "maciejb2k-pathfinding-app",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 25,
+ "system": "Dijkstra visualized on SVG map of store",
+ "upstream": "https://github.com/maciejb2k/pathfinding_app",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

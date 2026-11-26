@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:14:38Z",
+ "category": "gameplay",
+ "commit": "2025-04-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "trinhminhtriet/a-star-search \u2014 A* (A-star) algorithm is a widely used graph traversal and pathfinding algorithm known for its completeness, optimality, and efficiency.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "a-star-search",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "trinhminhtriet-a-star-search",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 22,
+ "system": "A* (A-star) algorithm is a widely used graph traversal and pathfinding algorithm known for its completeness, optimality, and efficiency.",
+ "upstream": "https://github.com/trinhminhtriet/a-star-search",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T05:14:36Z",
+ "category": "gameplay",
+ "commit": "b31338351074",
+ "delivery": "reference",
+ "description": "MrYang614/three-pathfinding-3d \u2014 pathfinding-algorithm fork from three-pathfinding and support 3d",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "three-pathfinding-3d",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 112067,
+ "slug": "mryang614-three-pathfinding-3d",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 31,
+ "system": "pathfinding-algorithm fork from three-pathfinding and support 3d",
+ "upstream": "https://github.com/MrYang614/three-pathfinding-3d",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

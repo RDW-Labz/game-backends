@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:14:38Z",
+ "category": "gameplay",
+ "commit": "2019-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "anseyuyin/AStar-Process \u2014 A* Pathfinding Algorithm process demo",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "AStar-Process",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "anseyuyin-astar-process",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 21,
+ "system": "A* Pathfinding Algorithm process demo",
+ "upstream": "https://github.com/anseyuyin/AStar-Process",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -3614,3 +3614,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/unrealcourse-04-battletank
   - reference gameplay/hjweide-pyastar2d
   - reference gameplay/joyhak-quickswitch
+
+- **2026-11-26 05:14 UTC** — tick 924: +2 screened, +4 reference, 13 skipped, catalogue=1928
+  - added gameplay/minecraft-pathfinding-minecraft-pathfinding (none, reference)
+  - added gameplay/mryang614-three-pathfinding-3d (none, reference)
+  - reference gameplay/brpapa-pathfinding-visualizer
+  - reference gameplay/maciejb2k-pathfinding-app
+  - reference gameplay/trinhminhtriet-a-star-search
+  - reference gameplay/anseyuyin-astar-process

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T05:14:34Z",
+ "category": "gameplay",
+ "commit": "c9d0d3857d52",
+ "delivery": "reference",
+ "description": "Minecraft-Pathfinding/minecraft-pathfinding",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "minecraft-pathfinding",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 451304,
+ "slug": "minecraft-pathfinding-minecraft-pathfinding",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 33,
+ "system": "see upstream",
+ "upstream": "https://github.com/Minecraft-Pathfinding/minecraft-pathfinding",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
