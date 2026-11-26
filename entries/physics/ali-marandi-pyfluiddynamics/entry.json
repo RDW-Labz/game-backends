@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:22:53Z",
+ "category": "physics",
+ "commit": "2026-09-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Ali-Marandi/PyFluidDynamics \u2014 A professional Python library for 2D incompressible Navier-Stokes simulations using the Finite Difference Method, with advanced visualization.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PyFluidDynamics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ali-marandi-pyfluiddynamics",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 108,
+ "system": "A professional Python library for 2D incompressible Navier-Stokes simulations using the Finite Difference Method, with advanced visualization.",
+ "upstream": "https://github.com/Ali-Marandi/PyFluidDynamics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

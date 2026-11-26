@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:22:53Z",
+ "category": "physics",
+ "commit": "2026-11-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "equinor/neqsim-python \u2014 NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation. This project is a Python interface to NeqSim.",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "neqsim-python",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "equinor-neqsim-python",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 117,
+ "system": "NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation. This project is a Python interface to NeqSim.",
+ "upstream": "https://github.com/equinor/neqsim-python",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

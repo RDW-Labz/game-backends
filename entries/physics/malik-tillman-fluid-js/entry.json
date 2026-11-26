@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T01:22:52Z",
+ "category": "physics",
+ "commit": "6759bfa272d0",
+ "delivery": "reference",
+ "description": "malik-tillman/Fluid-JS \u2014 A JavaScript library that allows for easy deployment of WebGL rendered fluid simulations.",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Fluid-JS",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 908592,
+ "slug": "malik-tillman-fluid-js",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 161,
+ "system": "A JavaScript library that allows for easy deployment of WebGL rendered fluid simulations.",
+ "upstream": "https://github.com/malik-tillman/Fluid-JS",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

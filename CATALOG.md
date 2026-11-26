@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 01:22 UTC · 1874 entries · 468 vendored, 1406 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 229 | 52 | 177 |
+| [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-
 
 ## physics
 
-**Physics** — 229 entries
+**Physics** — 235 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -893,6 +893,7 @@ _Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-
 | [FLAT](entries/physics/yuanming-hu-flat/README.md) | A 2D rigid body physics engine. | c++ | unknown | reference | [yuanming-hu/FLAT](https://github.com/yuanming-hu/FLAT) @ `2017-05-07 (branch tip at catalogue time)` |
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Flow](entries/physics/nvidiagameworks-flow/README.md) | Flow is a sparse grid-based fluid simulation library for real-time applications.  | c | unknown | reference | [NVIDIAGameWorks/Flow](https://github.com/NVIDIAGameWorks/Flow) @ `2025-03-31 (branch tip at catalogue time)` |
+| [Fluid-JS](entries/physics/malik-tillman-fluid-js/README.md) | A JavaScript library that allows for easy deployment of WebGL rendered fluid simulations. | javascript | none | reference | [malik-tillman/Fluid-JS](https://github.com/malik-tillman/Fluid-JS) @ `6759bfa272d0` |
 | [frankensim](entries/physics/dicklesworthstone-frankensim/README.md) | Plan-first Rust continuum for certified geometry, physics simulation, optimization, and rendering. | rust | unknown | reference | [Dicklesworthstone/frankensim](https://github.com/Dicklesworthstone/frankensim) @ `2026-11-26 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
 | [galaxy](entries/physics/reworks-org-galaxy/README.md) | C++23 Game Engine. Built on data-driven design principles and agile software engineering. | c | Apache-2.0 | reference | [reworks-org/galaxy](https://github.com/reworks-org/galaxy) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -929,6 +930,7 @@ _Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-
 | [kool](entries/physics/kool-engine-kool/README.md) | A Vulkan /  WebGPU / OpenGL engine for Desktop JVM, Android and Javascript written in Kotlin | kotlin | Apache-2.0 | reference | [kool-engine/kool](https://github.com/kool-engine/kool) @ `2026-11-23 (branch tip at catalogue time)` |
 | [LayaAir](entries/physics/layabox-layaair/README.md) | LayaAir is a fully platform rendering engine with rich 2D/3D rendering capabilities and a mature integrated development platform | typescript | MIT | reference | [layabox/LayaAir](https://github.com/layabox/LayaAir) @ `2026-11-13 (branch tip at catalogue time)` |
 | [libccd](entries/physics/libccd/README.md) | convex collision detection (GJK/EPA) library | c | BSD-3-Clause | vendored | [danfis/libccd](https://github.com/danfis/libccd) @ `7931e764a19e` |
+| [libclsph](entries/physics/libclsph-libclsph/README.md) | OpenCL based GPU accelerated SPH fluid simulation library | c++ | MIT | reference | [libclsph/libclsph](https://github.com/libclsph/libclsph) @ `2016-03-19 (branch tip at catalogue time)` |
 | [libpartikel](entries/physics/dbriemann-libpartikel/README.md) | A simple particle system library made with and for raylib. Works as header only library. | c | Zlib | vendored | [dbriemann/libpartikel](https://github.com/dbriemann/libpartikel) @ `09373edc0909` |
 | [limonEngine](entries/physics/enginmanap-limonengine/README.md) | 3D FPS game engine with full dynamic lighting and shadows | c++ | LGPL-3.0 | reference | [enginmanap/limonEngine](https://github.com/enginmanap/limonEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [lookas](entries/physics/rccyx-lookas/README.md) | Psychoacoustic terminal spectrum visualizer (mel-scale FFT, A-weighted energy, adaptive range tracking & spring physics) | rust | MIT | reference | [rccyx/lookas](https://github.com/rccyx/lookas) @ `2026-11-25 (branch tip at catalogue time)` |
@@ -942,6 +944,8 @@ _Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-
 | [Nature2D](entries/physics/jaipack17-nature2d/README.md) | A 2D physics engine for Roblox. Create versatile physics simulations and mechanics with GUIs! | lua | MIT | reference | [jaipack17/Nature2D](https://github.com/jaipack17/Nature2D) @ `2025-12-11 (branch tip at catalogue time)` |
 | [ncollide](entries/physics/dimforge-ncollide/README.md) | 2 and 3-dimensional collision detection library in Rust. | rust | Apache-2.0 | reference | [dimforge/ncollide](https://github.com/dimforge/ncollide) @ `2023-01-31 (branch tip at catalogue time)` |
 | [Nectar](entries/physics/kua8-nectar/README.md) | A notch and a dock for Windows: physics-animated, reactive, and built to replace your taskbar. | rust | GPL-3.0 | reference | [kua8/Nectar](https://github.com/kua8/Nectar) @ `2026-11-22 (branch tip at catalogue time)` |
+| [neqsim](entries/physics/equinor-neqsim/README.md) | NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation | java | Apache-2.0 | reference | [equinor/neqsim](https://github.com/equinor/neqsim) @ `99fa305f69da` |
+| [neqsim-python](entries/physics/equinor-neqsim-python/README.md) | NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation. This project is a Python interface to NeqSim. | python | Apache-2.0 | reference | [equinor/neqsim-python](https://github.com/equinor/neqsim-python) @ `2026-11-13 (branch tip at catalogue time)` |
 | [newton](entries/physics/hunterloftis-newton/README.md) | A playful, particle-based physics engine designed from the ground up for JavaScript. | javascript | none | reference | [hunterloftis/newton](https://github.com/hunterloftis/newton) @ `fc2c5f383fa4` |
 | [newton](entries/physics/newton-physics-newton/README.md) | An open-source, GPU-accelerated physics simulation engine built upon NVIDIA Warp, specifically targeting roboticists and simulation researchers. | python | Apache-2.0 | reference | [newton-physics/newton](https://github.com/newton-physics/newton) @ `f27aea83286e` |
 | [nexus](entries/physics/dimforge-nexus/README.md) | 2D and 3D cross-platform GPU multi-physics engine in Rust | rust | Apache-2.0 | reference | [dimforge/nexus](https://github.com/dimforge/nexus) @ `2026-11-01 (branch tip at catalogue time)` |
@@ -979,9 +983,11 @@ _Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
 | [profile](entries/physics/jungledesh-profile/README.md) | A physics-grounded, cost-aware optimization loop for vLLM | rust | unknown | reference | [jungledesh/profile](https://github.com/jungledesh/profile) @ `2026-08-22 (branch tip at catalogue time)` |
 | [project_superdex](entries/physics/facebookresearch-project-superdex/README.md) | SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platf | c++ | Apache-2.0 | reference | [facebookresearch/project_superdex](https://github.com/facebookresearch/project_superdex) @ `2026-11-23 (branch tip at catalogue time)` |
+| [PyFluidDynamics](entries/physics/ali-marandi-pyfluiddynamics/README.md) | A professional Python library for 2D incompressible Navier-Stokes simulations using the Finite Difference Method, with advanced visualization. | python | MIT | reference | [Ali-Marandi/PyFluidDynamics](https://github.com/Ali-Marandi/PyFluidDynamics) @ `2026-09-01 (branch tip at catalogue time)` |
 | [pygame-physics](entries/physics/idgmatrix-pygame-physics/README.md) | Simple Physics Simulation with Pygame | python | none | reference | [idgmatrix/pygame-physics](https://github.com/idgmatrix/pygame-physics) @ `d3fff95306b9` |
 | [pymunk](entries/physics/viblo-pymunk/README.md) | Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python | python | MIT | vendored | [viblo/pymunk](https://github.com/viblo/pymunk) @ `b993f9b3ef2d` |
 | [python-hacked-mobile-phone-](entries/physics/masudbro94-python-hacked-mobile-phone/README.md) | Open in app Get started   ITNEXT Published in ITNEXT  You have 2 free member-only stories left this month. Sign up for Medium and get an extra one  Kush Kush Fo | n/a | unknown | reference | [Masudbro94/python-hacked-mobile-phone-](https://github.com/Masudbro94/python-hacked-mobile-phone-) @ `2022-06-30 (branch tip at catalogue time)` |
+| [PyTOUGH](entries/physics/acroucher-pytough/README.md) | A Python library for automating TOUGH2 simulations of subsurface fluid and heat flow | python | LGPL-3.0 | reference | [acroucher/PyTOUGH](https://github.com/acroucher/PyTOUGH) @ `2026-05-25 (branch tip at catalogue time)` |
 | [QuarkPhysics](entries/physics/erayzesen-quarkphysics/README.md) | A 2D Soft Body and Rigid Body Physics Engine. | c++ | MIT | reference | [erayzesen/QuarkPhysics](https://github.com/erayzesen/QuarkPhysics) @ `2025-10-17 (branch tip at catalogue time)` |
 | [Randomation-Vehicle-Physics](entries/physics/justinvoke-randomation-vehicle-physics/README.md) | Vehicle physics system for the Unity engine. | c# | MIT | vendored | [JustInvoke/Randomation-Vehicle-Physics](https://github.com/JustInvoke/Randomation-Vehicle-Physics) @ `192ba860c3c9` |
 | [Rapier](entries/physics/rapier/README.md) | Rust 2D/3D physics with deterministic solver + WASM build | rust | Apache-2.0 | reference | [dimforge/rapier](https://github.com/dimforge/rapier) @ `475caa3ff464` |

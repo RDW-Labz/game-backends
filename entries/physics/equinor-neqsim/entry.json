@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T01:22:49Z",
+ "category": "physics",
+ "commit": "99fa305f69da",
+ "delivery": "reference",
+ "description": "equinor/neqsim \u2014 NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "neqsim",
+ "reference_reason": "size gate: 107 MB",
+ "size_bytes": 112220128,
+ "slug": "equinor-neqsim",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 176,
+ "system": "NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation",
+ "upstream": "https://github.com/equinor/neqsim",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

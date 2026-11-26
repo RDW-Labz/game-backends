@@ -3532,3 +3532,11 @@ One line per 15-minute extension tick, newest last.
   - added physics/icurtis1-third-person-controller-splat (MIT, vendored)
   - reference physics/icurtis1-gaussian-splat-character-controller
   - reference physics/pockerhead-oxijolt
+
+- **2026-11-26 01:22 UTC** — tick 910: +2 screened, +4 reference, 10 skipped, catalogue=1874
+  - added physics/equinor-neqsim (Apache-2.0, reference)
+  - added physics/malik-tillman-fluid-js (none, reference)
+  - reference physics/equinor-neqsim-python
+  - reference physics/acroucher-pytough
+  - reference physics/ali-marandi-pyfluiddynamics
+  - reference physics/libclsph-libclsph
