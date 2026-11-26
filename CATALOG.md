@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
-| [math](#math) — Math libraries | 147 | 45 | 102 |
+| [math](#math) — Math libraries | 153 | 47 | 106 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
@@ -1053,7 +1053,7 @@ _Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-
 
 ## math
 
-**Math libraries** — 147 entries
+**Math libraries** — 153 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1078,6 +1078,7 @@ _Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-
 | [cute_headers](entries/math/randygaul-cute-headers/README.md) | Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games | c | unknown | reference | [RandyGaul/cute_headers](https://github.com/RandyGaul/cute_headers) @ `2026-11-03 (branch tip at catalogue time)` |
 | [DecimalMath](entries/math/alcueca-decimalmath/README.md) | Smart contract implementing fixed point math operations using structs for type checking. | solidity | GPL-3.0 | reference | [alcueca/DecimalMath](https://github.com/alcueca/DecimalMath) @ `2020-09-17 (branch tip at catalogue time)` |
 | [DirectXMath](entries/math/directxmath/README.md) | SIMD math library (SSE/AVX/NEON) for games | c++ | MIT | vendored | [microsoft/DirectXMath](https://github.com/microsoft/DirectXMath) @ `fef99048e3da` |
+| [dual_quaternions](entries/math/achllle-dual-quaternions/README.md) | dual quaternions libraries | python | MIT | reference | [Achllle/dual_quaternions](https://github.com/Achllle/dual_quaternions) @ `2025-12-01 (branch tip at catalogue time)` |
 | [dungeons-of-noudar](entries/math/thefakemontyontherun-dungeons-of-noudar/README.md) | A first person dungeon-crawler for DOS, written in C++, using software rendering and fixed point math | c++ | BSD-2-Clause | vendored | [TheFakeMontyOnTheRun/dungeons-of-noudar](https://github.com/TheFakeMontyOnTheRun/dungeons-of-noudar) @ `03e94de32261` |
 | [dvector](entries/math/barerose-dvector/README.md) | Portable, single-file, 2D/3D vector/quaternion/matrix math library | c | CC0-1.0 | reference | [BareRose/dvector](https://github.com/BareRose/dvector) @ `2021-01-12 (branch tip at catalogue time)` |
 | [earcut](entries/math/georust-earcut/README.md) | A Rust port of the Earcut polygon triangulation library | rust | Apache-2.0 | reference | [georust/earcut](https://github.com/georust/earcut) @ `2026-11-02 (branch tip at catalogue time)` |
@@ -1112,6 +1113,7 @@ _Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-
 | [hlml](entries/math/fmutant-hlml/README.md) | vectorized high-level math library | c++ | WTFPL | reference | [fmutant/hlml](https://github.com/fmutant/hlml) @ `2019-06-24 (branch tip at catalogue time)` |
 | [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
 | [hVHDL_example_project](entries/math/hvhdl-hvhdl-example-project/README.md) | An example project which uses many of the ideas and features of the hVHDL libraries like fixed and floating point math modules and has build scripts for most co | vhdl | MIT | reference | [hVHDL/hVHDL_example_project](https://github.com/hVHDL/hVHDL_example_project) @ `2025-01-13 (branch tip at catalogue time)` |
+| [hypatia](entries/math/dagostinelli-hypatia/README.md) | A header-only, pure-C math library for 2D/3D graphics (matrix, vector, quaternion), with accurate, robust rotation math suited to attitude work. C89/C90 with a  | c | MIT | vendored | [dagostinelli/hypatia](https://github.com/dagostinelli/hypatia) @ `125ab87d8b6b` |
 | [hypercomplex](entries/math/discretegames-hypercomplex/README.md) | A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras. | python | MIT | reference | [discretegames/hypercomplex](https://github.com/discretegames/hypercomplex) @ `2022-08-14 (branch tip at catalogue time)` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [Icaria-Noise](entries/math/krubbles-icaria-noise/README.md) | A highly-optimized C# noise-function library.  | c# | MIT | vendored | [krubbles/Icaria-Noise](https://github.com/krubbles/Icaria-Noise) @ `28112e32671f` |
@@ -1141,6 +1143,7 @@ _Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-
 | [MaxMath](entries/math/mrunbelievable92-maxmath/README.md) | A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with ha | c# | Apache-2.0 | reference | [MrUnbelievable92/MaxMath](https://github.com/MrUnbelievable92/MaxMath) @ `bfeaf2875e07` |
 | [MeshLib](entries/math/meshinspector-meshlib/README.md) | 3D geometry processing SDK: fast mesh boolean, mesh repair, decimation, remeshing, offset, point cloud triangulation and ICP registration. C++ with Python, C#,  | c++ | unknown | reference | [MeshInspector/MeshLib](https://github.com/MeshInspector/MeshLib) @ `2026-11-25 (branch tip at catalogue time)` |
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
+| [minkindr](entries/math/ethz-asl-minkindr/README.md) | A minimal library for transformations, following the kindr interface. Uses active quaternions of rotation in Hamilton notation. | c++ | BSD-3-Clause | vendored | [ethz-asl/minkindr](https://github.com/ethz-asl/minkindr) @ `564f12639a84` |
 | [MLweb](entries/math/lauerfab-mlweb/README.md) | Machine learning and scientific computing (linear algebra, statistics, optimization) javascript libraries, with an online lab. | javascript | GPL-2.0 | reference | [lauerfab/MLweb](https://github.com/lauerfab/MLweb) @ `2021-12-16 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NoiseTools](entries/math/keijiro-noisetools/README.md) | A small library of noise functions | c# | unknown | reference | [keijiro/NoiseTools](https://github.com/keijiro/NoiseTools) @ `2016-05-13 (branch tip at catalogue time)` |
@@ -1163,9 +1166,11 @@ _Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
 | [qaws](entries/math/soufianekhiat-qaws/README.md) | A dependency-free C11 library for creating, evaluating, sampling, traversing, and inspecting parametric curves and surfaces in 2D and 3D.  One source, four back | c | MIT | reference | [soufianekhiat/qaws](https://github.com/soufianekhiat/qaws) @ `2026-11-22 (branch tip at catalogue time)` |
 | [qlibs](entries/math/kmilo17pet-qlibs/README.md) | A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c | MIT | reference | [kmilo17pet/qlibs](https://github.com/kmilo17pet/qlibs) @ `2026-03-17 (branch tip at catalogue time)` |
+| [Quaternion](entries/math/martinweigel-quaternion/README.md) | A basic quaternion library written in C | c | ISC | reference | [MartinWeigel/Quaternion](https://github.com/MartinWeigel/Quaternion) @ `2022-05-16 (branch tip at catalogue time)` |
 | [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
 | [Quaternion_Library](entries/math/mauricegit-quaternion-library/README.md) | A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q | c | ISC | reference | [MauriceGit/Quaternion_Library](https://github.com/MauriceGit/Quaternion_Library) @ `2016-09-07 (branch tip at catalogue time)` |
+| [qvm](entries/math/boostorg-qvm/README.md) | Boost Quaternions, Vectors, Matrices library | c++ | BSL-1.0 | reference | [boostorg/qvm](https://github.com/boostorg/qvm) @ `2026-11-11 (branch tip at catalogue time)` |
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [RandLAPACK](entries/math/ballisticla-randlapack/README.md) | A high-performance C++ library for randomized numerical linear algebra | c++ | unknown | reference | [BallisticLA/RandLAPACK](https://github.com/BallisticLA/RandLAPACK) @ `2026-11-23 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
@@ -1186,6 +1191,7 @@ _Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-
 | [substrate-fixed](entries/math/encointer-substrate-fixed/README.md) | a fixed point library for substrate based on `fixed`, providing transcendent math functions | rust | Apache-2.0 | vendored | [encointer/substrate-fixed](https://github.com/encointer/substrate-fixed) @ `d5f70362f2e0` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [SwiftMath](entries/math/swiftgfx-swiftmath/README.md) | Cross-platform math library with SIMD support | swift | BSD-2-Clause | reference | [SwiftGFX/SwiftMath](https://github.com/SwiftGFX/SwiftMath) @ `2022-07-30 (branch tip at catalogue time)` |
+| [Tensor](entries/math/thenumbernine-tensor/README.md) | C++ template metaprogram driven tensor math library | c++ | MIT | reference | [thenumbernine/Tensor](https://github.com/thenumbernine/Tensor) @ `2026-01-26 (branch tip at catalogue time)` |
 | [Terathon-Math-Library](entries/math/ericlengyel-terathon-math-library/README.md) | C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra. | c++ | MIT | reference | [EricLengyel/Terathon-Math-Library](https://github.com/EricLengyel/Terathon-Math-Library) @ `2026-07-27 (branch tip at catalogue time)` |
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 | [TestU01-2009](entries/math/umontreal-simul-testu01-2009/README.md) | This is the 2009 version of TestU01, a software library, implemented in the ANSI C language, and offering a collection of utilities for the empirical statistica | c | Apache-2.0 | reference | [umontreal-simul/TestU01-2009](https://github.com/umontreal-simul/TestU01-2009) @ `2026-04-12 (branch tip at catalogue time)` |

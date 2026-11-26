@@ -1,0 +1,21 @@
+
+FIND_PACKAGE(Doxygen)
+IF(DOXYGEN_FOUND)
+	SET(HYPATIA_OUTPUT_DOXYFILE "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile")
+	CONFIGURE_FILE(
+		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in"
+		"${HYPATIA_OUTPUT_DOXYFILE}"
+	)
+	CONFIGURE_FILE(
+		"${CMAKE_CURRENT_SOURCE_DIR}/footer.html"
+		"${CMAKE_CURRENT_BINARY_DIR}/footer.html"
+	)
+	ADD_CUSTOM_TARGET(
+		hypatia_docs
+		${DOXYGEN_EXECUTABLE} "${HYPATIA_OUTPUT_DOXYFILE}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		COMMENT "Building documentation in 'doc' directory..."
+	)
+ELSE()
+	MESSAGE(STATUS "Doxygen not found. You won't be able to build documentation.")
+ENDIF(DOXYGEN_FOUND)

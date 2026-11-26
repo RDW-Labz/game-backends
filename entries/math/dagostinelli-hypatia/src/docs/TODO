@@ -1,0 +1,53 @@
+Remaining Work:
+
+- matrix4 Test the identity property I * M = M and also M * I = M
+- matrix4 Test the associative property A(BC) == (AB)C
+- matrix4 Test the distributive property A(B+C) == AB + AC
+- matrix4 Test the lack of commutative property AB != BA (in general)
+- Add all the variations of rotations with a matrix using matrix4_set_from_quaternion, matrix4_set_from_axis_angle, matrix4_transformation_rotation_x,y,z
+- add a vector to a quat, add each element one by one
+- add a scalar to a quat, add the scalar to each element of the quat
+- in quat-slerp is the shortest arc properly computed with negate or conjugate?
+- is quaternion_dot_product an appropriate operation on a quaternion?
+- add a unit test for quaternion inverse that involves a unit (norm == 1) and a non-unit quaternion (norm != 1)
+- make doxygen ignore vector3_get_reference_vector3
+
+
+C89 compliance:
+- The anonymous unions in the types are not C89 (gcc -std=c89 -pedantic reports them).
+  They stay.
+- <stdint.h> / uint8_t are C99
+
+API gaps:
+- vector2/3/4_lerp
+- vector2/3/4 clamp, component-wise min / max
+- vector projection (project a onto b)
+- matrix4 TRS constructor (translation + rotation + scale in one call)
+- normal matrix helper (inverse-transpose of the upper 3x3)
+- quaternion <-> matrix3 conversions
+- left-handed variants of the _EXP projection / view functions
+- a depth-range option for the _EXP projections: 0..1 (Vulkan/D3D) vs -1..1 (OpenGL)
+- consider optional by-value inline variants for small types for expression-style code
+
+Remaining casts (README: prefer no casts):
+- The math macros HYP_SQRT, HYP_FMOD, HYP_SIN, HYP_COS, HYP_TAN, HYP_ASIN, HYP_ACOS and
+  HYP_ATAN2 cast the double result to HYP_FLOAT. They stay: C89 has only the double
+  functions.
+- HYP_RANDOM_FLOAT casts rand() and RAND_MAX to HYP_FLOAT.
+
+Long double support (planned):
+- A HYPATIA_LONG_DOUBLE_PRECISION_FLOATS mode: HYP_FLOAT long double, HYP_FLOAT_C(x) x ## L
+- Needs sinl/cosl/sqrtl/etc. (C99), its own HYP_EPSILON, and hyp_print_value with a
+  long double parameter (%Lf)
+- long double differs by platform; CI needs a long double job per platform
+
+Build and CI:
+- The generated docs do not include the function doc comments: they are in the
+  implementation section, which Doxygen does not read. Not decided how to fix.
+
+Docs:
+- Publish the Doxygen output (.github/workflows/publish-docs.yml)
+- Add a conventions guide: handedness, row- vs column-major storage, angles in radians,
+  objects are mutated in place
+
+// end of TODO.txt ...

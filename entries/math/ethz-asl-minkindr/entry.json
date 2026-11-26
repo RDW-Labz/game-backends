@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T02:26:37Z",
+ "category": "math",
+ "commit": "564f12639a84",
+ "delivery": "vendored",
+ "description": "ethz-asl/minkindr \u2014 A minimal library for transformations, following the kindr interface. Uses active quaternions of rotation in Hamilton notation.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "minkindr",
+ "size_bytes": 112264,
+ "slug": "ethz-asl-minkindr",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 98,
+ "system": "A minimal library for transformations, following the kindr interface. Uses active quaternions of rotation in Hamilton notation.",
+ "upstream": "https://github.com/ethz-asl/minkindr",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

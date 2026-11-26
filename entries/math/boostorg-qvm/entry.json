@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:26:39Z",
+ "category": "math",
+ "commit": "2026-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "boostorg/qvm \u2014 Boost Quaternions, Vectors, Matrices library",
+ "language": "c++",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "qvm",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "boostorg-qvm",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 90,
+ "system": "Boost Quaternions, Vectors, Matrices library",
+ "upstream": "https://github.com/boostorg/qvm",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

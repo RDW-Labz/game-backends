@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:26:39Z",
+ "category": "math",
+ "commit": "2022-05-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MartinWeigel/Quaternion \u2014 A basic quaternion library written in C",
+ "language": "c",
+ "license": "ISC",
+ "license_verdict": "clean",
+ "name": "Quaternion",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (ISC)",
+ "slug": "martinweigel-quaternion",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 90,
+ "system": "A basic quaternion library written in C",
+ "upstream": "https://github.com/MartinWeigel/Quaternion",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

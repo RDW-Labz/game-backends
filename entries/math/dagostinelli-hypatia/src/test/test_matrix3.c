@@ -1,0 +1,571 @@
+/* SPDX-License-Identifier: MIT */
+
+/* non-symmetric, not the identity, and invertible */
+static const struct matrix3 test_matrix3_fixed = {.m = {1, 2, 3, 0, 1, 4, 5, 6, 0}};
+
+static const char *test_matrix3_zero(void)
+{
+	struct matrix3 zero;
+	uint8_t i;
+
+	matrix3_zero(&zero);
+
+	for (i = 0; i < 9; i++) {
+		test_assert(scalar_equalsf(zero.m[i], HYP_FLOAT_C(0.0)));
+	}
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_equals(void)
+{
+	struct matrix3 m, identity;
+
+	matrix3_identity(&identity);
+	matrix3_set(&m, &test_matrix3_fixed);
+
+	/* equal */
+	test_assert(matrix3_equals(&identity, &identity));
+
+	/* not-equal */
+	test_assert(matrix3_equals(&identity, &m) == 0);
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_multiply_identity(void)
+{
+	struct matrix3 m1, m2, identity;
+
+	matrix3_identity(&identity);
+	matrix3_set(&m1, &test_matrix3_fixed);
+
+	/* copy m1 -> m2 */
+	matrix3_set(&m2, &m1);
+
+	/* m2 = m2 * I */
+	matrix3_multiply(&m2, &identity);
+
+	/* equal */
+	test_assert(matrix3_equals(&m2, &m1));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_multiplym3(void)
+{
+	struct matrix3 m1, m2, mR;
+
+	m1.c00 = 1;  m1.c10 = 2;   m1.c20 = 3;
+	m1.c01 = 5;  m1.c11 = 6;   m1.c21 = 7;
+	m1.c02 = 9;  m1.c12 = 10;  m1.c22 = 11;
+
+	mR.c00 = 38;  mR.c10 = 44;   mR.c20 = 50;
+	mR.c01 = 98;  mR.c11 = 116;   mR.c21 = 134;
+	mR.c02 = 158;  mR.c12 = 188;  mR.c22 = 218;
+
+	/* copy m1 -> m2 */
+	matrix3_set(&m2, &m1);
+
+	matrix3_multiply(&m2, &m1);
+	test_assert(matrix3_equals(&mR, &m2));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_determinant_trial1(void)
+{
+	struct matrix3 m = {.m = {5, 3, 7, 2, -5, 8, -6, 4, 9}};
+
+	test_assert(scalar_equals(matrix3_determinant(&m), -737));
+	return NULL;
+}
+
+
+static const char *test_matrix3_determinant_trial2(void)
+{
+	struct matrix3 m = {.m = {8, 4, 3, -5, 6, -2, 7, 9, -8}};
+
+	test_assert(scalar_equals(matrix3_determinant(&m), -717));
+	return NULL;
+}
+
+
+static const char *test_matrix3_determinant_trial3(void)
+{
+	struct matrix3 m = {.m = {2, -3, 1, 2, 0, -1, 1, 4, 5}};
+
+	test_assert(scalar_equals(matrix3_determinant(&m), 49));
+	return NULL;
+}
+
+
+static const char *test_matrix3_determinant_trial4(void)
+{
+	struct matrix3 m = {.m = {HYP_FLOAT_C(0.608088), HYP_FLOAT_C(0.742654), HYP_FLOAT_C(0.558388), HYP_FLOAT_C(0.722123), HYP_FLOAT_C(0.982764), HYP_FLOAT_C(0.726415), HYP_FLOAT_C(0.266338), HYP_FLOAT_C(0.861622), HYP_FLOAT_C(0.904272)}};
+
+	test_assert(scalar_equals(matrix3_determinant(&m), HYP_FLOAT_C(0.019803606119590332)));
+	return NULL;
+}
+
+
+
+static const char *test_matrix3_inverse(void)
+{
+	struct matrix3 originalMatrix = {.m = {2, 0, -1, 5, 0, 1, 1, 1, 3}};
+	struct matrix3 identity;
+	struct matrix3 inverted;
+	struct matrix3 scratchMatrix;
+	void *hasInverse = NULL;
+
+	matrix3_identity(&identity);
+
+	matrix3_identity(&originalMatrix);
+
+	hasInverse = matrix3_invert(matrix3_set(&inverted, &originalMatrix));
+
+	test_assert(hasInverse);
+
+	matrix3_identity(&scratchMatrix);
+	matrix3_multiply(&scratchMatrix, &inverted);
+	matrix3_multiply(&scratchMatrix, &originalMatrix);
+
+	test_assert(matrix3_equals(&identity, &scratchMatrix));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_invert(void)
+{
+	struct matrix3 m = {.m = {2, 0, -1, 5, 0, 1, 1, 1, 3}};
+	struct matrix3 expected = {.m = {-1, -1, 0, -14, 7, -7, 5, -2, 0}};
+	HYP_FLOAT determinant;
+	uint8_t i;
+
+	/* manually finish setting up expected */
+	determinant = matrix3_determinant(&m);
+	test_assert(scalar_equals(determinant, -7));
+	for (i = 0; i < 9; i++) {
+		expected.m[i] = expected.m[i] / determinant;
+	}
+
+	matrix3_invert(&m);
+	for (i = 0; i < 9; i++) {
+		test_assert(scalar_equals(m.m[i], expected.m[i]));
+	}
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_columnrowcolumn(void)
+{
+	struct matrix3 c;
+	struct matrix3 r;
+	struct matrix3 m;
+
+	matrix3_zero(&c);
+	matrix3_zero(&r);
+	matrix3_zero(&m);
+
+	matrix3_set(&m, &test_matrix3_fixed);
+
+	matrix3_set(&c, &m);
+	matrix3_set(&r, &m);
+
+	test_assert(matrix3_equals(&c, &r));
+	test_assert(matrix3_equals(&c, &m));
+	test_assert(matrix3_equals(&m, &r));
+
+	/* transpose only c and r, but not m */
+	hyp_matrix3_transpose_rowcolumn(&r);
+	hyp_matrix3_transpose_columnrow(&c);
+
+	test_assert(matrix3_equals(&c, &r));
+	test_assert(matrix3_equals(&c, &m) == 0);
+	test_assert(matrix3_equals(&m, &r) == 0);
+
+	matrix3_transpose(&m);
+
+	test_assert(matrix3_equals(&c, &m));
+	test_assert(matrix3_equals(&m, &r));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_transpose(void)
+{
+	struct matrix3 m = {.m = {0, 1, 2, 3, 4, 5, 6, 7, 8}};
+	struct matrix3 e = {.m = {0, 3, 6, 1, 4, 7, 2, 5, 8}};
+
+	matrix3_transpose(&m);
+	test_assert(matrix3_equals(&m, &e));
+	return NULL;
+}
+
+
+static const char *test_matrix3_identity_with_vector(void)
+{
+	/* vector * identity_matrix = vector */
+	struct matrix3 m;
+	struct vector2 startingPosition = {.v = {HYP_FLOAT_C(4.3), HYP_FLOAT_C(1.4)}};
+	struct vector2 expectedPosition = {.v = {HYP_FLOAT_C(4.3), HYP_FLOAT_C(1.4)}};
+
+	matrix3_identity(&m);
+
+	vector2_multiplym3(&startingPosition, &m);
+	test_assert(vector2_equals(&startingPosition, &expectedPosition));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_transformation_translatev2(void)
+{
+	struct matrix3 transform;
+
+	struct vector2 startingPosition = {.v = {HYP_FLOAT_C(0.0), HYP_FLOAT_C(1.0)}};
+	struct vector2 translation = {.v = {HYP_FLOAT_C(0.1), HYP_FLOAT_C(0.1)}};
+	struct vector2 expectedPosition = {.v = {HYP_FLOAT_C(0.1), HYP_FLOAT_C(1.1)}};
+
+	matrix3_make_transformation_translationv2(&transform, &translation);
+	vector2_multiplym3(&startingPosition, &transform);
+	test_assert(vector2_equals(&startingPosition, &expectedPosition));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_transformation_translatev2_negative(void)
+{
+	struct matrix3 transform;
+
+	struct vector2 startingPosition = {.v = {HYP_FLOAT_C(0.0), HYP_FLOAT_C(1.0)}};
+	struct vector2 translation = {.v = {-HYP_FLOAT_C(0.1), -HYP_FLOAT_C(0.1)}};
+	struct vector2 expectedPosition = {.v = {-HYP_FLOAT_C(0.1), HYP_FLOAT_C(0.9)}};
+
+	matrix3_make_transformation_translationv2(&transform, &translation);
+	vector2_multiplym3(&startingPosition, &transform);
+	test_assert(vector2_equals(&startingPosition, &expectedPosition));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_transformation_scalingv2(void)
+{
+	struct matrix3 transform;
+
+	struct vector2 startingPosition = {.v = {HYP_FLOAT_C(0.0), HYP_FLOAT_C(1.0)}};
+	struct vector2 scale = {.v = {HYP_FLOAT_C(0.1), HYP_FLOAT_C(0.1)}};
+	struct vector2 expectedPosition = {.v = {HYP_FLOAT_C(0.0), HYP_FLOAT_C(0.1)}};
+
+	matrix3_make_transformation_scalingv2(&transform, &scale);
+	vector2_multiplym3(&startingPosition, &transform);
+	test_assert(vector2_equals(&startingPosition, &expectedPosition));
+
+	return NULL;
+}
+
+
+static const char *test_vector2_rotate_by_matrix_zx_quarter_turn(void)
+{
+	struct matrix3 m;
+	struct vector2 r;
+
+	matrix3_make_transformation_rotationf_z(&m, HYP_TAU / HYP_FLOAT_C(4.0));
+	vector2_set(&r, HYP_VECTOR2_UNIT_X);
+	vector2_multiplym3(&r, &m);
+	test_assert(vector2_equals(&r, HYP_VECTOR2_UNIT_Y));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_rotatev3_xz_quarter_turn(void)
+{
+	struct matrix3 m;
+	struct vector2 r;
+
+	vector2_set(&r, HYP_VECTOR2_UNIT_X);
+	matrix3_identity(&m);
+	matrix3_rotate(&m, HYP_TAU / HYP_FLOAT_C(4.0));
+	vector2_multiplym3(&r, &m);
+	test_assert(vector2_equals(&r, HYP_VECTOR2_UNIT_Y));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_rotatev3_xz_quarter_turn_opposite(void)
+{
+	struct matrix3 m;
+	struct vector2 r;
+
+	vector2_set(&r, HYP_VECTOR2_UNIT_X);
+	matrix3_identity(&m);
+	matrix3_rotate(&m, -(HYP_TAU / HYP_FLOAT_C(4.0)));
+	vector2_multiplym3(&r, &m);
+	test_assert(vector2_equals(&r, HYP_VECTOR2_UNIT_Y_NEGATIVE));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_add(void)
+{
+	struct matrix3 m1 = {.m = {1, 2, 3, 4, 5, 6, 7, 8, 9}};
+	struct matrix3 m2 = {.m = {9, 8, 7, 6, 5, 4, 3, 2, 1}};
+	struct matrix3 expected = {.m = {10, 10, 10, 10, 10, 10, 10, 10, 10}};
+
+	matrix3_add(&m1, &m2);
+	test_assert(matrix3_equals(&m1, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_subtract(void)
+{
+	struct matrix3 m1 = {.m = {10, 9, 8, 7, 6, 5, 4, 3, 2}};
+	struct matrix3 m2 = {.m = {1, 2, 3, 4, 5, 6, 7, 8, 9}};
+	struct matrix3 expected = {.m = {9, 7, 5, 3, 1, -1, -3, -5, -7}};
+
+	matrix3_subtract(&m1, &m2);
+	test_assert(matrix3_equals(&m1, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_multiplyf(void)
+{
+	struct matrix3 m = {.m = {1, 2, 3, 4, 5, 6, 7, 8, 9}};
+	struct matrix3 expected = {.m = {3, 6, 9, 12, 15, 18, 21, 24, 27}};
+
+	matrix3_multiplyf(&m, HYP_FLOAT_C(3.0));
+	test_assert(matrix3_equals(&m, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_multiplyf_zero(void)
+{
+	struct matrix3 m = {.m = {1, 2, 3, 4, 5, 6, 7, 8, 9}};
+	struct matrix3 expected;
+
+	matrix3_zero(&expected);
+
+	matrix3_multiplyf(&m, HYP_FLOAT_C(0.0));
+	test_assert(matrix3_equals(&m, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_inverse_nonmutating(void)
+{
+	struct matrix3 original = {.m = {2, 0, -1, 5, 0, 1, 1, 1, 3}};
+	struct matrix3 originalCopy = {.m = {2, 0, -1, 5, 0, 1, 1, 1, 3}};
+	struct matrix3 inv;
+	struct matrix3 product;
+	struct matrix3 identity;
+	void *result;
+
+	matrix3_identity(&identity);
+
+	result = matrix3_inverse(&original, &inv);
+	test_assert(result);
+
+	/* original should not be modified */
+	test_assert(matrix3_equals(&original, &originalCopy));
+
+	/* original * inv should be identity */
+	matrix3_set(&product, &original);
+	matrix3_multiply(&product, &inv);
+	test_assert(matrix3_equals(&product, &identity));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_inverse_singular(void)
+{
+	struct matrix3 singular = {.m = {1, 2, 3, 4, 5, 6, 7, 8, 9}};
+	struct matrix3 result;
+	void *ret;
+
+	ret = matrix3_inverse(&singular, &result);
+	test_assert(!ret);
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_multiplyv2(void)
+{
+	/* multiply by identity should return same vector */
+	struct matrix3 m;
+	struct vector2 v = {.v = {HYP_FLOAT_C(3.5), -HYP_FLOAT_C(2.1)}};
+	struct vector2 r;
+
+	matrix3_identity(&m);
+	matrix3_multiplyv2(&m, &v, &r);
+	test_assert(vector2_equals(&r, &v));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_multiplyv2_translation(void)
+{
+	struct matrix3 m;
+	struct vector2 v = {.v = {HYP_FLOAT_C(1.0), HYP_FLOAT_C(2.0)}};
+	struct vector2 translation = {.v = {HYP_FLOAT_C(3.0), HYP_FLOAT_C(4.0)}};
+	struct vector2 r;
+	struct vector2 expected = {.v = {HYP_FLOAT_C(4.0), HYP_FLOAT_C(6.0)}};
+
+	matrix3_make_transformation_translationv2(&m, &translation);
+	matrix3_multiplyv2(&m, &v, &r);
+	test_assert(vector2_equals(&r, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_scalev2(void)
+{
+	struct matrix3 m;
+	struct vector2 scale = {.v = {HYP_FLOAT_C(2.0), HYP_FLOAT_C(3.0)}};
+	struct vector2 v = {.v = {HYP_FLOAT_C(4.0), HYP_FLOAT_C(5.0)}};
+	struct vector2 expected = {.v = {HYP_FLOAT_C(8.0), HYP_FLOAT_C(15.0)}};
+
+	matrix3_identity(&m);
+	matrix3_scalev2(&m, &scale);
+	vector2_multiplym3(&v, &m);
+	test_assert(vector2_equals(&v, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_translatev2(void)
+{
+	struct matrix3 m;
+	struct vector2 translation = {.v = {HYP_FLOAT_C(1.0), HYP_FLOAT_C(2.0)}};
+	struct vector2 v = {.v = {HYP_FLOAT_C(3.0), HYP_FLOAT_C(4.0)}};
+	struct vector2 expected = {.v = {HYP_FLOAT_C(4.0), HYP_FLOAT_C(6.0)}};
+
+	matrix3_identity(&m);
+	matrix3_translatev2(&m, &translation);
+	vector2_multiplym3(&v, &m);
+	test_assert(vector2_equals(&v, &expected));
+
+	return NULL;
+}
+
+
+static const char *test_matrix3_rotationf_z_components(void)
+{
+	/*
+	 * Regression test for bug where matrix3_make_transformation_rotationf_z
+	 * set r12 = cos(angle) instead of r11 = cos(angle).
+	 *
+	 * A 2D rotation matrix around Z should be:
+	 *   | cos  sin  0 |
+	 *   | -sin cos  0 |
+	 *   | 0    0    1 |
+	 *
+	 * The bug produced:
+	 *   | cos  sin  0 |
+	 *   | -sin 1    cos |    <-- r11 wrong (1 from identity), r12 wrong (cos leaked here)
+	 *   | 0    0    1 |
+	 */
+	struct matrix3 m;
+	HYP_FLOAT angle = HYP_PI / HYP_FLOAT_C(4.0); /* 45 degrees */
+	HYP_FLOAT c = HYP_COS(angle);
+	HYP_FLOAT s = HYP_SIN(angle);
+
+	matrix3_make_transformation_rotationf_z(&m, angle);
+
+	/* row 0: cos, sin, 0 */
+	test_assert(scalar_equalsf(m.r00, c));
+	test_assert(scalar_equalsf(m.r01, s));
+	test_assert(scalar_equalsf(m.r02, HYP_FLOAT_C(0.0)));
+
+	/* row 1: -sin, cos, 0   (bug had: -sin, 1, cos) */
+	test_assert(scalar_equalsf(m.r10, -s));
+	test_assert(scalar_equalsf(m.r11, c));
+	test_assert(scalar_equalsf(m.r12, HYP_FLOAT_C(0.0)));
+
+	/* row 2: 0, 0, 1 */
+	test_assert(scalar_equalsf(m.r20, HYP_FLOAT_C(0.0)));
+	test_assert(scalar_equalsf(m.r21, HYP_FLOAT_C(0.0)));
+	test_assert(scalar_equalsf(m.r22, HYP_FLOAT_C(1.0)));
+
+	return NULL;
+}
+
+static const char *test_matrix3_rotate_diagonal_vector(void)
+{
+	struct matrix3 m;
+	struct vector2 v;
+	HYP_FLOAT angle = HYP_PI_HALF; /* 90 degrees */
+
+	/* rotate (1,1) by 90 degrees -> (-1,1) */
+	vector2_setf2(&v, HYP_FLOAT_C(1.0), HYP_FLOAT_C(1.0));
+	matrix3_identity(&m);
+	matrix3_make_transformation_rotationf_z(&m, angle);
+	vector2_multiplym3(&v, &m);
+	test_assert(scalar_equalsf(v.x, -HYP_FLOAT_C(1.0)));
+	test_assert(scalar_equalsf(v.y, HYP_FLOAT_C(1.0)));
+
+	return NULL;
+}
+
+static const char *matrix3_all_tests(void)
+{
+	run_test(test_matrix3_zero);
+	run_test(test_matrix3_equals);
+	run_test(test_matrix3_multiply_identity);
+	run_test(test_matrix3_multiplym3);
+	run_test(test_matrix3_identity_with_vector);
+	run_test(test_matrix3_columnrowcolumn);
+	run_test(test_matrix3_transpose);
+	run_test(test_matrix3_determinant_trial1);
+	run_test(test_matrix3_determinant_trial2);
+	run_test(test_matrix3_determinant_trial3);
+	run_test(test_matrix3_determinant_trial4);
+	run_test(test_matrix3_inverse);
+	run_test(test_matrix3_invert);
+
+	run_test(test_matrix3_transformation_translatev2);
+	run_test(test_matrix3_transformation_translatev2_negative);
+	run_test(test_matrix3_transformation_scalingv2);
+	run_test(test_vector2_rotate_by_matrix_zx_quarter_turn);
+
+	run_test(test_matrix3_rotatev3_xz_quarter_turn);
+	run_test(test_matrix3_rotatev3_xz_quarter_turn_opposite);
+
+	run_test(test_matrix3_add);
+	run_test(test_matrix3_subtract);
+	run_test(test_matrix3_multiplyf);
+	run_test(test_matrix3_multiplyf_zero);
+	run_test(test_matrix3_inverse_nonmutating);
+	run_test(test_matrix3_inverse_singular);
+	run_test(test_matrix3_multiplyv2);
+	run_test(test_matrix3_multiplyv2_translation);
+	run_test(test_matrix3_scalev2);
+	run_test(test_matrix3_translatev2);
+	run_test(test_matrix3_rotationf_z_components);
+	run_test(test_matrix3_rotate_diagonal_vector);
+
+	return NULL;
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:26:39Z",
+ "category": "math",
+ "commit": "2025-12-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Achllle/dual_quaternions \u2014 dual quaternions libraries",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "dual_quaternions",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "achllle-dual-quaternions",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 90,
+ "system": "dual quaternions libraries",
+ "upstream": "https://github.com/Achllle/dual_quaternions",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

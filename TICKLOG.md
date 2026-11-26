@@ -3558,3 +3558,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/ballisticla-randlapack
   - reference math/juliaparallel-elemental-jl
   - reference math/lauerfab-mlweb
+
+- **2026-11-26 02:26 UTC** — tick 914: +2 screened, +4 reference, 15 skipped, catalogue=1892
+  - added math/dagostinelli-hypatia (MIT, vendored)
+  - added math/ethz-asl-minkindr (BSD-3-Clause, vendored)
+  - reference math/thenumbernine-tensor
+  - reference math/martinweigel-quaternion
+  - reference math/boostorg-qvm
+  - reference math/achllle-dual-quaternions
