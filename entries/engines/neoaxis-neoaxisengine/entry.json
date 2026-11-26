@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T12:26:45Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NeoAxis/NeoAxisEngine \u2014 A versatile game engine designed for creating video games and real-time apps.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "NeoAxisEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "neoaxis-neoaxisengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 265,
+ "system": "A versatile game engine designed for creating video games and real-time apps.",
+ "upstream": "https://github.com/NeoAxis/NeoAxisEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

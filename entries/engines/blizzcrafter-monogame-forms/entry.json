@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T12:26:40Z",
+ "category": "engines",
+ "commit": "9fbfa57c8ea9",
+ "delivery": "reference",
+ "description": "BlizzCrafter/MonoGame.Forms \u2014 MonoGame.Forms is the easiest way of integrating a MonoGame render window into your Windows Forms project. It should make your life much easier, when you want to create your own editor environment.",
+ "language": "c#",
+ "license": "MS-PL",
+ "license_file": "LICENSE",
+ "license_verdict": "gated-reference",
+ "name": "MonoGame.Forms",
+ "reference_reason": "licence: MS-PL (gated-reference)",
+ "size_bytes": 191624,
+ "slug": "blizzcrafter-monogame-forms",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 306,
+ "system": "MonoGame.Forms is the easiest way of integrating a MonoGame render window into your Windows Forms project. It should make your life much easier, when you want t",
+ "upstream": "https://github.com/BlizzCrafter/MonoGame.Forms",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T12:26:44Z",
+ "category": "engines",
+ "commit": "6c9d8853309d",
+ "delivery": "reference",
+ "description": "AscensionGameDev/Intersect-Engine \u2014 Intersect provides a complete game development suite for creating 2d mmorpgs with no programming experience required!",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "Intersect-Engine",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 18434808,
+ "slug": "ascensiongamedev-intersect-engine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 295,
+ "system": "Intersect provides a complete game development suite for creating 2d mmorpgs with no programming experience required!",
+ "upstream": "https://github.com/AscensionGameDev/Intersect-Engine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

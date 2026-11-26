@@ -3709,3 +3709,9 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 12:10 UTC** — tick 950: +2 screened, +0 reference, 51 skipped, catalogue=1963
   - added engines/mofr-diablerie (MIT, vendored)
   - added engines/gdquest-demos-godot-3d-mannequin (MIT, vendored)
+
+- **2026-11-26 12:26 UTC** — tick 951: +2 screened, +2 reference, 56 skipped, catalogue=1967
+  - added engines/blizzcrafter-monogame-forms (MS-PL, reference)
+  - added engines/ascensiongamedev-intersect-engine (GPL-3.0, reference)
+  - reference engines/kermalis-pokemongameengine
+  - reference engines/neoaxis-neoaxisengine

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 792 | 191 | 601 |
+| [engines](#engines) — Game engines and engine subsystems | 796 | 191 | 605 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 792 entries
+**Game engines and engine subsystems** — 796 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -402,6 +402,7 @@ _Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-
 | [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
 | [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
 | [input.js](entries/engines/jbuck-input-js/README.md) | Input.js is a JavaScript library to map controller and OS-specific USB enumerations provided by the Gamepad API in Mozilla Firefox to an ideal virtual gamepad. | javascript | MIT | vendored | [jbuck/input.js](https://github.com/jbuck/input.js) @ `1edf2a435417` |
+| [Intersect-Engine](entries/engines/ascensiongamedev-intersect-engine/README.md) | Intersect provides a complete game development suite for creating 2d mmorpgs with no programming experience required! | c# | GPL-3.0 | reference | [AscensionGameDev/Intersect-Engine](https://github.com/AscensionGameDev/Intersect-Engine) @ `6c9d8853309d` |
 | [Intrinsic](entries/engines/begla-intrinsic/README.md) | Intrinsic is a Vulkan based cross-platform game and rendering engine. The project is currently in an early stage of development. | c++ | Apache-2.0 | reference | [begla/Intrinsic](https://github.com/begla/Intrinsic) @ `2023-04-21 (branch tip at catalogue time)` |
 | [iyes_progress](entries/engines/iyesgames-iyes-progress/README.md) | Bevy plugin to help track progress and perform state transitions | rust | unknown | reference | [IyesGames/iyes_progress](https://github.com/IyesGames/iyes_progress) @ `2026-10-09 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
@@ -473,6 +474,7 @@ _Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-
 | [MLEM](entries/engines/ellpeck-mlem/README.md) | Libraries for MonoGame and FNA that provide abstractions, quality of life improvements and additional features like a ui system and easy input handling. | c# | MIT | reference | [Ellpeck/MLEM](https://github.com/Ellpeck/MLEM) @ `2026-11-17 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
+| [MonoGame.Forms](entries/engines/blizzcrafter-monogame-forms/README.md) | MonoGame.Forms is the easiest way of integrating a MonoGame render window into your Windows Forms project. It should make your life much easier, when you want t | c# | MS-PL | reference | [BlizzCrafter/MonoGame.Forms](https://github.com/BlizzCrafter/MonoGame.Forms) @ `9fbfa57c8ea9` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
 | [MoravaEngine](entries/engines/dtrajko-moravaengine/README.md) | C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-tra | c++ | Apache-2.0 | reference | [dtrajko/MoravaEngine](https://github.com/dtrajko/MoravaEngine) @ `535e8fb78cad` |
 | [morpeh](entries/engines/scellecs-morpeh/README.md) | 🎲 ECS Framework for Unity Game Engine and .Net Platform | c# | MIT | reference | [scellecs/morpeh](https://github.com/scellecs/morpeh) @ `2026-11-17 (branch tip at catalogue time)` |
@@ -493,6 +495,7 @@ _Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [nebula](entries/engines/gscept-nebula/README.md) | Nebula is an open-source and free-to-use modern C++ game engine. | c++ | unknown | reference | [gscept/nebula](https://github.com/gscept/nebula) @ `2026-11-25 (branch tip at catalogue time)` |
+| [NeoAxisEngine](entries/engines/neoaxis-neoaxisengine/README.md) | A versatile game engine designed for creating video games and real-time apps. | c# | unknown | reference | [NeoAxis/NeoAxisEngine](https://github.com/NeoAxis/NeoAxisEngine) @ `2026-11-25 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [netthreads-libgdx](entries/engines/alistairrutherford-netthreads-libgdx/README.md) | Extension library for LibGDX. Implements Cocos2d-like Director, Layer, Scenes etc | java | unknown | reference | [alistairrutherford/netthreads-libgdx](https://github.com/alistairrutherford/netthreads-libgdx) @ `2016-11-27 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
@@ -570,6 +573,7 @@ _Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-
 | [ply-engine](entries/engines/thereddeveloper-ply-engine/README.md) | Beautiful UIs in Rust. Cross-platform. Dead simple. | rust | 0BSD | reference | [TheRedDeveloper/ply-engine](https://github.com/TheRedDeveloper/ply-engine) @ `2026-08-31 (branch tip at catalogue time)` |
 | [pmtech](entries/engines/polymonster-pmtech/README.md) | Lightweight, multi-platform, data-oriented game engine. | c++ | MIT | reference | [polymonster/pmtech](https://github.com/polymonster/pmtech) @ `2026-10-25 (branch tip at catalogue time)` |
 | [PokemonBattleEngine](entries/engines/kermalis-pokemonbattleengine/README.md) | A C# library that can emulate Pokémon battles. | c# | MIT | vendored | [Kermalis/PokemonBattleEngine](https://github.com/Kermalis/PokemonBattleEngine) @ `e733883abb04` |
+| [PokemonGameEngine](entries/engines/kermalis-pokemongameengine/README.md) | A C# 2D Pokémon game engine and map editor. | c# | MIT | reference | [Kermalis/PokemonGameEngine](https://github.com/Kermalis/PokemonGameEngine) @ `2024-04-15 (branch tip at catalogue time)` |
 | [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
 | [polymorph](entries/engines/rlipsc-polymorph/README.md) | A fast and frugal entity-component-system library with a focus on code generation and compile time optimisation. | nim | Apache-2.0 | reference | [rlipsc/polymorph](https://github.com/rlipsc/polymorph) @ `2025-02-22 (branch tip at catalogue time)` |
 | [popochiu](entries/engines/carenalgas-popochiu/README.md) | Godot plugin to make point-and-click adventure games, inspired by tools like Adventure Game Studio and PowerQuest. | gdscript | MIT | vendored | [carenalgas/popochiu](https://github.com/carenalgas/popochiu) @ `e8ab6c1f79ce` |

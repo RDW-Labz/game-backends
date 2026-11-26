@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T12:26:45Z",
+ "category": "engines",
+ "commit": "2024-04-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Kermalis/PokemonGameEngine \u2014 A C# 2D Pok\u00e9mon game engine and map editor.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PokemonGameEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kermalis-pokemongameengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 276,
+ "system": "A C# 2D Pok\u00e9mon game engine and map editor.",
+ "upstream": "https://github.com/Kermalis/PokemonGameEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
