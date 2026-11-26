@@ -3676,3 +3676,5 @@ One line per 15-minute extension tick, newest last.
   - added save-state/passive-radio-pigframe (MIT, vendored)
   - reference save-state/pasttelstudios-piesfive
   - reference save-state/agentichunter-blip-magic-trick
+
+- **2026-11-26 09:14 UTC** — tick 939: +0 screened, +0 reference, 20 skipped, catalogue=1954
