@@ -3634,3 +3634,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 05:46 UTC** — tick 926: +2 screened, +0 reference, 22 skipped, catalogue=1936
   - added gameplay/adammyhre-unity-behaviour-trees (Unlicense, vendored)
   - added gameplay/jjacobsson-calltree (none, reference)
+
+- **2026-11-26 06:02 UTC** — tick 927: +2 screened, +4 reference, 31 skipped, catalogue=1942
+  - added gameplay/cpp-sc2-cpp-sc2 (MIT, vendored)
+  - added gameplay/abw333-dominoes (MIT, vendored)
+  - reference gameplay/developerux-behaviorlibrary
+  - reference gameplay/hlavacs-viennagameailibrary
+  - reference gameplay/demircancelebi-tafl
+  - reference gameplay/cbush-beehive

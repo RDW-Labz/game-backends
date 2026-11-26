@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T06:02:40Z",
+ "category": "gameplay",
+ "commit": "2013-02-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DeveloperUX/BehaviorLibrary \u2014 BehaviorLibrary is a framework for creating behavior trees for game AI. It is free to use, modify, and redestribute as covered under the attached License (FreeBSD). Enjoy!",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "BehaviorLibrary",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "developerux-behaviorlibrary",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 57,
+ "system": "BehaviorLibrary is a framework for creating behavior trees for game AI. It is free to use, modify, and redestribute as covered under the attached License (FreeB",
+ "upstream": "https://github.com/DeveloperUX/BehaviorLibrary",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

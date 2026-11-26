@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T06:02:39Z",
+ "category": "gameplay",
+ "commit": "ea9f532c9b83",
+ "delivery": "vendored",
+ "description": "abw333/dominoes \u2014 A Python library for the game of dominoes, with an accompanying CLI and AI players.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "dominoes",
+ "size_bytes": 132157,
+ "slug": "abw333-dominoes",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 58,
+ "system": "A Python library for the game of dominoes, with an accompanying CLI and AI players.",
+ "upstream": "https://github.com/abw333/dominoes",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

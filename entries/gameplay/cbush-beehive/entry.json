@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T06:02:40Z",
+ "category": "gameplay",
+ "commit": "2020-08-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cbush/beehive \u2014 A flexible, modern, header-only implementation of behavior trees",
+ "language": "c++",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "beehive",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Zlib)",
+ "slug": "cbush-beehive",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 43,
+ "system": "A flexible, modern, header-only implementation of behavior trees",
+ "upstream": "https://github.com/cbush/beehive",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T06:02:37Z",
+ "category": "gameplay",
+ "commit": "2aad75f3f3d2",
+ "delivery": "vendored",
+ "description": "cpp-sc2/cpp-sc2 \u2014 StarCraft II Client C++ library, proud fork of Blizzard/s2client-api.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cpp-sc2",
+ "size_bytes": 3400680,
+ "slug": "cpp-sc2-cpp-sc2",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 62,
+ "system": "StarCraft II Client C++ library, proud fork of Blizzard/s2client-api.",
+ "upstream": "https://github.com/cpp-sc2/cpp-sc2",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

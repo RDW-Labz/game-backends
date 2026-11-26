@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 06:02 UTC · 1942 entries · 483 vendored, 1459 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 279 | 68 | 211 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 285 | 70 | 215 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,7 +1280,7 @@ _Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 279 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 285 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1306,7 +1306,9 @@ _Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
 | [baritone](entries/gameplay/cabaletta-baritone/README.md) | google maps for block game | java | LGPL-3.0 | reference | [cabaletta/baritone](https://github.com/cabaletta/baritone) @ `2264210f943d` |
+| [beehive](entries/gameplay/cbush-beehive/README.md) | A flexible, modern, header-only implementation of behavior trees | c++ | Zlib | reference | [cbush/beehive](https://github.com/cbush/beehive) @ `2020-08-18 (branch tip at catalogue time)` |
 | [behaviac](entries/gameplay/tencent-behaviac/README.md) | behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite s | c# | MIT | reference | [Tencent/behaviac](https://github.com/Tencent/behaviac) @ `351442b36726` |
+| [BehaviorLibrary](entries/gameplay/developerux-behaviorlibrary/README.md) | BehaviorLibrary is a framework for creating behavior trees for game AI. It is free to use, modify, and redestribute as covered under the attached License (FreeB | c# | unknown | reference | [DeveloperUX/BehaviorLibrary](https://github.com/DeveloperUX/BehaviorLibrary) @ `2013-02-06 (branch tip at catalogue time)` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
 | [BehaviourTree](entries/gameplay/eraclys-behaviourtree/README.md) | see upstream | c# | MIT | reference | [Eraclys/BehaviourTree](https://github.com/Eraclys/BehaviourTree) @ `2022-12-27 (branch tip at catalogue time)` |
 | [behaviourtree.lua](entries/gameplay/tanema-behaviourtree-lua/README.md) | a simple behaviour tree library for lua ported from javascript | lua | MIT | vendored | [tanema/behaviourtree.lua](https://github.com/tanema/behaviourtree.lua) @ `fe37dec0c365` |
@@ -1330,12 +1332,14 @@ _Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-
 | [conan-procedural-quest-generation](entries/gameplay/science-of-imagination-conan-procedural-quest-generation/README.md) | Let CONAN tell you a story: Procedural quest generation | sas | MIT | vendored | [science-of-imagination/conan-procedural-quest-generation](https://github.com/science-of-imagination/conan-procedural-quest-generation) @ `8751d05c8ac8` |
 | [ContextSteering](entries/gameplay/friedforfun-contextsteering/README.md) | Unity package to add context steering behaviours to your GameObjects | c# | GPL-3.0 | reference | [friedforfun/ContextSteering](https://github.com/friedforfun/ContextSteering) @ `1478f88a1cf2` |
 | [Continuous-CBS](entries/gameplay/pathplanning-continuous-cbs/README.md) | Continuous CBS - a modification of conflict based search algorithm, that allows to perform actions (move, wait) of arbitrary duration. Timeline is not discretiz | c++ | MIT | reference | [PathPlanning/Continuous-CBS](https://github.com/PathPlanning/Continuous-CBS) @ `2025-05-30 (branch tip at catalogue time)` |
+| [cpp-sc2](entries/gameplay/cpp-sc2-cpp-sc2/README.md) | StarCraft II Client C++ library, proud fork of Blizzard/s2client-api. | c++ | MIT | vendored | [cpp-sc2/cpp-sc2](https://github.com/cpp-sc2/cpp-sc2) @ `2aad75f3f3d2` |
 | [cupoch](entries/gameplay/neka-nat-cupoch/README.md) | Robotics with GPU computing | c++ | MIT | reference | [neka-nat/cupoch](https://github.com/neka-nat/cupoch) @ `2026-06-25 (branch tip at catalogue time)` |
 | [dijkstra](entries/gameplay/ryancarrier-dijkstra/README.md) | Fast golang Dijkstra path finder | go | MIT | vendored | [RyanCarrier/dijkstra](https://github.com/RyanCarrier/dijkstra) @ `7264718f883b` |
 | [DIMS](entries/gameplay/hugech39-dims/README.md) | 🐟 数据库系统原理课程设计，Drug Inventory Management System，基于 SSM 框架的医院药品库存管理系统。 | java | unknown | reference | [HugeCH39/DIMS](https://github.com/HugeCH39/DIMS) @ `2021-03-20 (branch tip at catalogue time)` |
 | [divert](entries/gameplay/ohchase-divert/README.md) | Rust bindings for Recast Navigation. | rust | none | reference | [ohchase/divert](https://github.com/ohchase/divert) @ `6f2e1e968ba2` |
 | [Django-Inventory-Management-System](entries/gameplay/kenbrotech-django-inventory-management-system/README.md) | This is a Django Inventory Management System Web Application. This course contains the basics of Django to intermediary and advanced concepts in Django, Web Dev | javascript | none | reference | [KenBroTech/Django-Inventory-Management-System](https://github.com/KenBroTech/Django-Inventory-Management-System) @ `f43bfb6439fa` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
+| [dominoes](entries/gameplay/abw333-dominoes/README.md) | A Python library for the game of dominoes, with an accompanying CLI and AI players. | python | MIT | vendored | [abw333/dominoes](https://github.com/abw333/dominoes) @ `ea9f532c9b83` |
 | [DonAINavigation](entries/gameplay/vszue-donainavigation/README.md) | This plugin provides a 3D dynamic pathfinding system for use with Unreal Engine 4. It's primarly designed for Flying AI creatures based in dynamic or procedural | c++ | MIT | reference | [VSZue/DonAINavigation](https://github.com/VSZue/DonAINavigation) @ `2023-01-25 (branch tip at catalogue time)` |
 | [doryen-rs](entries/gameplay/jice-nospam-doryen-rs/README.md) | ascii roguelike library in rust with native and wasm support | rust | MIT | reference | [jice-nospam/doryen-rs](https://github.com/jice-nospam/doryen-rs) @ `2023-10-12 (branch tip at catalogue time)` |
 | [DotRecast](entries/gameplay/ikpil-dotrecast/README.md) | DotRecast - a C# port of Recast & Detour, Industry-standard navigation mesh toolset for .NET, Unity3D, games, servers | c# | Zlib | reference | [ikpil/DotRecast](https://github.com/ikpil/DotRecast) @ `2026-10-03 (branch tip at catalogue time)` |
@@ -1526,6 +1530,7 @@ _Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-
 | [StoreDown](entries/gameplay/jliscom-storedown/README.md) | An inventory system that is hopefully simple enough for everyone! | javascript | MIT | vendored | [JLiscom/StoreDown](https://github.com/JLiscom/StoreDown) @ `cb2746330760` |
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
+| [tafl](entries/gameplay/demircancelebi-tafl/README.md) | A library for Hnefatafl (Viking Chess, or Tafl) that is used for move generation/validation, piece placement/movement, and game over detection. You can use it t | typescript | MIT | reference | [demircancelebi/tafl](https://github.com/demircancelebi/tafl) @ `2026-08-05 (branch tip at catalogue time)` |
 | [tdme2](entries/gameplay/andreasdr-tdme2/README.md) | TDME2 - ThreeDeeMiniEngine2 is a lightweight, multi-platform 3D engine including tools suited for 3D game/application development using C++, Mini(t)Script, GLSL | c++ | unknown | reference | [andreasdr/tdme2](https://github.com/andreasdr/tdme2) @ `2025-11-08 (branch tip at catalogue time)` |
 | [three-pathfinding](entries/gameplay/donmccurdy-three-pathfinding/README.md) | Navigation mesh utilities for three.js, based on PatrolJS. | javascript | MIT | reference | [donmccurdy/three-pathfinding](https://github.com/donmccurdy/three-pathfinding) @ `2026-10-06 (branch tip at catalogue time)` |
 | [three-pathfinding-3d](entries/gameplay/mryang614-three-pathfinding-3d/README.md) | pathfinding-algorithm fork from three-pathfinding and support 3d | typescript | none | reference | [MrYang614/three-pathfinding-3d](https://github.com/MrYang614/three-pathfinding-3d) @ `b31338351074` |
@@ -1552,6 +1557,7 @@ _Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-
 | [vector-field-pathfinding](entries/gameplay/solasxer-vector-field-pathfinding/README.md) | Vector field pathfinding demo implementation, using Cocos Creator 3.8.7 | typescript | MIT | reference | [SolasXer/vector-field-pathfinding](https://github.com/SolasXer/vector-field-pathfinding) @ `2025-12-06 (branch tip at catalogue time)` |
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [ViennaGameAILibrary](entries/gameplay/hlavacs-viennagameailibrary/README.md) | A library containing game AI algorithms. | c++ | MIT | reference | [hlavacs/ViennaGameAILibrary](https://github.com/hlavacs/ViennaGameAILibrary) @ `2026-11-20 (branch tip at catalogue time)` |
 | [visual-maze-solver](entries/gameplay/hasssanezzz-visual-maze-solver/README.md) | A minimal visual maze solver using various algorithms. | typescript | unknown | reference | [hasssanezzz/visual-maze-solver](https://github.com/hasssanezzz/visual-maze-solver) @ `2024-04-26 (branch tip at catalogue time)` |
 | [visual_astar_python](entries/gameplay/dicklesworthstone-visual-astar-python/README.md) | Generate Cool-Looking Mazes and Animations Illustrating the A* Pathfinding Algorithm | python | unknown | reference | [Dicklesworthstone/visual_astar_python](https://github.com/Dicklesworthstone/visual_astar_python) @ `2025-02-27 (branch tip at catalogue time)` |
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |

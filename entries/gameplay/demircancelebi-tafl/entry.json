@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T06:02:40Z",
+ "category": "gameplay",
+ "commit": "2026-08-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "demircancelebi/tafl \u2014 A library for Hnefatafl (Viking Chess, or Tafl) that is used for move generation/validation, piece placement/movement, and game over detection. You can use it to simulate games between AI agents - although you need to write the agents yourself :)",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "tafl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "demircancelebi-tafl",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 49,
+ "system": "A library for Hnefatafl (Viking Chess, or Tafl) that is used for move generation/validation, piece placement/movement, and game over detection. You can use it t",
+ "upstream": "https://github.com/demircancelebi/tafl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

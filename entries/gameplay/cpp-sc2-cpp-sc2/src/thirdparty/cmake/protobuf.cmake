@@ -1,0 +1,54 @@
+message(STATUS "FetchContent: protobuf")
+
+set(protobuf_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(protobuf_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+# Do not build a target protoc when it cannot run (WSL2 precompiled protos,
+# CMAKE_CROSSCOMPILING) or when the host already supplied one.
+if (WSL2_CROSS_COMPILE OR CMAKE_CROSSCOMPILING OR Protobuf_PROTOC_EXECUTABLE)
+    set(protobuf_BUILD_PROTOC_BINARIES OFF CACHE BOOL "" FORCE)
+endif ()
+
+FetchContent_Declare(
+    protobuf
+    GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+    GIT_TAG v33.0
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(protobuf)
+
+set(protobuf_targets libprotobuf libprotobuf-lite libprotoc protoc)
+
+foreach (target IN LISTS protobuf_targets)
+    if (TARGET ${target})
+        set_target_properties(${target} PROPERTIES FOLDER contrib)
+    endif ()
+
+    if (MSVC)
+        target_compile_options(${target} PRIVATE /W0)
+    endif ()
+endforeach ()
+
+# Resolve the protoc used to generate s2clientprotocol sources.
+# WSL2_CROSS_COMPILE copies precompiled dumps in sc2protocol and skips this.
+if (NOT WSL2_CROSS_COMPILE)
+    if (Protobuf_PROTOC_EXECUTABLE)
+        set(protoc_executable ${Protobuf_PROTOC_EXECUTABLE})
+        set(protoc_depends ${Protobuf_PROTOC_EXECUTABLE})
+    elseif (CMAKE_CROSSCOMPILING)
+        find_program(protoc_executable
+            NAMES protoc
+            PATHS /usr/bin /usr/local/bin
+            NO_CMAKE_FIND_ROOT_PATH
+        )
+        if (NOT protoc_executable)
+            message(FATAL_ERROR
+                "Cross-compiling needs a host protoc. "
+                "Pass -DProtobuf_PROTOC_EXECUTABLE=<path>.")
+        endif()
+        set(protoc_depends ${protoc_executable})
+    else ()
+        set(protoc_executable ${PROJECT_BINARY_DIR}/bin/protoc)
+        set(protoc_depends protoc)
+    endif()
+endif ()
