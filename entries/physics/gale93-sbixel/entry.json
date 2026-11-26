@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:34:39Z",
+ "category": "physics",
+ "commit": "2025-08-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gale93/sbixel \u2014 \ud83e\uddea A simple pixel physics simulator in Rust using Macroquad",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "sbixel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gale93-sbixel",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 39,
+ "system": "\ud83e\uddea A simple pixel physics simulator in Rust using Macroquad ",
+ "upstream": "https://github.com/gale93/sbixel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

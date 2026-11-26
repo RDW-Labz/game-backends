@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:34:39Z",
+ "category": "physics",
+ "commit": "2026-06-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bitshifter/bevy-physics-weekend \u2014 Game physics in one weekend with bevy",
+ "language": "rust",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "bevy-physics-weekend",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "bitshifter-bevy-physics-weekend",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 38,
+ "system": "Game physics in one weekend with bevy",
+ "upstream": "https://github.com/bitshifter/bevy-physics-weekend",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

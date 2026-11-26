@@ -3510,3 +3510,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/dicklesworthstone-frankensim
   - reference physics/jungledesh-profile
   - reference physics/teamatomecs-atomecs
+
+- **2026-11-26 00:34 UTC** — tick 907: +2 screened, +4 reference, 12 skipped, catalogue=1858
+  - added physics/t-veor-hypervis (none, reference)
+  - added physics/one-for-all-gorilla-physics (none, reference)
+  - reference physics/rccyx-lookas
+  - reference physics/gale93-sbixel
+  - reference physics/apich-organization-rssn
+  - reference physics/bitshifter-bevy-physics-weekend

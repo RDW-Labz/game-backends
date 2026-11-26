@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:34:39Z",
+ "category": "physics",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Apich-Organization/rssn \u2014 rssn is an open-source scientific computing library for Rust: a computer algebra system, numerical kernels and physics simulations behind one small API.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "rssn",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "apich-organization-rssn",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 39,
+ "system": "rssn is an open-source scientific computing library for Rust: a computer algebra system, numerical kernels and physics simulations behind one small API.",
+ "upstream": "https://github.com/Apich-Organization/rssn",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

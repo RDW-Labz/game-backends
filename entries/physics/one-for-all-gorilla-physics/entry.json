@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T00:34:37Z",
+ "category": "physics",
+ "commit": "aa5b9020c393",
+ "delivery": "reference",
+ "description": "one-for-all/gorilla-physics \u2014 3D Physics Engine for Robotics in Rust",
+ "language": "rust",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "gorilla-physics",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1626669,
+ "slug": "one-for-all-gorilla-physics",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 42,
+ "system": "3D Physics Engine for Robotics in Rust",
+ "upstream": "https://github.com/one-for-all/gorilla-physics",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

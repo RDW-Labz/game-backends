@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T00:34:34Z",
+ "category": "physics",
+ "commit": "0231e7cd84d8",
+ "delivery": "reference",
+ "description": "t-veor/hypervis \u2014 A silly 4D physics simulation.",
+ "language": "rust",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "hypervis",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 183097,
+ "slug": "t-veor-hypervis",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 53,
+ "system": "A silly 4D physics simulation.",
+ "upstream": "https://github.com/t-veor/hypervis",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

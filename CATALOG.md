@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 213 | 48 | 165 |
+| [physics](#physics) — Physics | 219 | 48 | 171 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-
 
 ## physics
 
-**Physics** — 213 entries
+**Physics** — 219 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -829,6 +829,7 @@ _Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-
 | [awesome-collision-detection](entries/physics/jslee02-awesome-collision-detection/README.md) | :sunglasses: A curated list of awesome collision detection libraries and resources | python | CC0-1.0 | reference | [jslee02/awesome-collision-detection](https://github.com/jslee02/awesome-collision-detection) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ballin](entries/physics/minimaxir-ballin/README.md) | A colorful interactive physics simulator with thousands of balls, but in your terminal! | rust | MIT | reference | [minimaxir/ballin](https://github.com/minimaxir/ballin) @ `2026-01-19 (branch tip at catalogue time)` |
 | [ballistics-engine](entries/physics/ajokela-ballistics-engine/README.md) | High-performance ballistics trajectory engine | rust | MIT | reference | [ajokela/ballistics-engine](https://github.com/ajokela/ballistics-engine) @ `2026-11-23 (branch tip at catalogue time)` |
+| [bevy-physics-weekend](entries/physics/bitshifter-bevy-physics-weekend/README.md) | Game physics in one weekend with bevy | rust | CC0-1.0 | reference | [bitshifter/bevy-physics-weekend](https://github.com/bitshifter/bevy-physics-weekend) @ `2026-06-09 (branch tip at catalogue time)` |
 | [bevy_heavy](entries/physics/avianphysics-bevy-heavy/README.md) | Mass properties for Bevy's geometric primitives. | rust | Apache-2.0 | vendored | [avianphysics/bevy_heavy](https://github.com/avianphysics/bevy_heavy) @ `d379081ef273` |
 | [bevy_physimple](entries/physics/rustystriker-bevy-physimple/README.md) | A physics lib for the bevy game engine based on physme  | rust | MIT | reference | [RustyStriker/bevy_physimple](https://github.com/RustyStriker/bevy_physimple) @ `2022-08-31 (branch tip at catalogue time)` |
 | [bevy_prototype_character_controller](entries/physics/superdump-bevy-prototype-character-controller/README.md) | Character controllers for use with Bevy and any physics engine you like | rust | MIT | vendored | [superdump/bevy_prototype_character_controller](https://github.com/superdump/bevy_prototype_character_controller) @ `a7a87b3c2c4e` |
@@ -901,11 +902,13 @@ _Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-
 | [godot-vehicle](entries/physics/seerban-godot-vehicle/README.md) | WIP Racing Game and 3d vehicle physics implementation in Godot Engine. | gdscript | MIT | reference | [Seerban/godot-vehicle](https://github.com/Seerban/godot-vehicle) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot-vs-rapier](entries/physics/extrawurst-godot-vs-rapier/README.md) | compare gdnative rust based physics against Godot built-in physics | rust | unknown | reference | [extrawurst/godot-vs-rapier](https://github.com/extrawurst/godot-vs-rapier) @ `2021-08-04 (branch tip at catalogue time)` |
 | [godot_rapier3d](entries/physics/demindiro-godot-rapier3d/README.md) | Godot bindings for the Rapier3D physics engine | rust | MIT | reference | [Demindiro/godot_rapier3d](https://github.com/Demindiro/godot_rapier3d) @ `2021-07-23 (branch tip at catalogue time)` |
+| [gorilla-physics](entries/physics/one-for-all-gorilla-physics/README.md) | 3D Physics Engine for Robotics in Rust | rust | none | reference | [one-for-all/gorilla-physics](https://github.com/one-for-all/gorilla-physics) @ `aa5b9020c393` |
 | [gpu-physics-engine](entries/physics/marcvivas-gpu-physics-engine/README.md) | Experimenting with a gpu physics engine from scratch | rust | Apache-2.0 | vendored | [MarcVivas/gpu-physics-engine](https://github.com/MarcVivas/gpu-physics-engine) @ `d1131288b34f` |
 | [gpu-voxels](entries/physics/fzi-forschungszentrum-informatik-gpu-voxels/README.md) | GPU-Voxels is a CUDA based library which allows high resolution volumetric collision detection between animated 3D models and live pointclouds from 3D sensors o | c++ | unknown | reference | [fzi-forschungszentrum-informatik/gpu-voxels](https://github.com/fzi-forschungszentrum-informatik/gpu-voxels) @ `2023-08-05 (branch tip at catalogue time)` |
 | [Hanachan](entries/physics/stblr-hanachan/README.md) | Mario Kart Wii physics reimplementation | rust | GPL-2.0 | reference | [stblr/Hanachan](https://github.com/stblr/Hanachan) @ `bd57482be685` |
 | [HC](entries/physics/vrld-hc/README.md) | General purpose collision detection library for the use with LÖVE. | lua | unknown | reference | [vrld/HC](https://github.com/vrld/HC) @ `2025-12-31 (branch tip at catalogue time)` |
 | [hypersomnia — physics](entries/physics/hypersomnia-physics/README.md) | rigid-body collision and dynamics | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [hypervis](entries/physics/t-veor-hypervis/README.md) | A silly 4D physics simulation. | rust | none | reference | [t-veor/hypervis](https://github.com/t-veor/hypervis) @ `0231e7cd84d8` |
 | [Illuminant](entries/physics/sq-illuminant/README.md) | Realtime 2D lighting and particle system library | c# | none | reference | [sq/Illuminant](https://github.com/sq/Illuminant) @ `3ef6d14e4383` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
 | [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
@@ -922,6 +925,7 @@ _Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-
 | [libccd](entries/physics/libccd/README.md) | convex collision detection (GJK/EPA) library | c | BSD-3-Clause | vendored | [danfis/libccd](https://github.com/danfis/libccd) @ `7931e764a19e` |
 | [libpartikel](entries/physics/dbriemann-libpartikel/README.md) | A simple particle system library made with and for raylib. Works as header only library. | c | Zlib | vendored | [dbriemann/libpartikel](https://github.com/dbriemann/libpartikel) @ `09373edc0909` |
 | [limonEngine](entries/physics/enginmanap-limonengine/README.md) | 3D FPS game engine with full dynamic lighting and shadows | c++ | LGPL-3.0 | reference | [enginmanap/limonEngine](https://github.com/enginmanap/limonEngine) @ `2026-11-22 (branch tip at catalogue time)` |
+| [lookas](entries/physics/rccyx-lookas/README.md) | Psychoacoustic terminal spectrum visualizer (mel-scale FFT, A-weighted energy, adaptive range tracking & spring physics) | rust | MIT | reference | [rccyx/lookas](https://github.com/rccyx/lookas) @ `2026-11-25 (branch tip at catalogue time)` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |
 | [mujoco-rs](entries/physics/davidhozic-mujoco-rs/README.md) | MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer. | rust | Apache-2.0 | vendored | [davidhozic/mujoco-rs](https://github.com/davidhozic/mujoco-rs) @ `f10b47f29a5f` |
@@ -983,6 +987,7 @@ _Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-
 | [ripit](entries/physics/javeke-ripit/README.md) | An interactive, tearable cloth simulation in the browser ; a modern rebuild of the classic [Tearable Cloth](https://pushmatrix.github.io/tearable/) demo by Dani | typescript | MIT | reference | [javeke/ripit](https://github.com/javeke/ripit) @ `2026-05-07 (branch tip at catalogue time)` |
 | [roblox-sphere-motion-lab](entries/physics/mehedimaruf4t2-roblox-sphere-motion-lab/README.md) | Roblox Ball Movement System 2026: Open-Source Physics Controller Guide | html | none | reference | [mehedimaruf4t2/roblox-sphere-motion-lab](https://github.com/mehedimaruf4t2/roblox-sphere-motion-lab) @ `00304c8708c8` |
 | [RobotNativeEngine](entries/physics/rsasaki0109-robotnativeengine/README.md) | Robot Native Engine — robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters. | rust | Apache-2.0 | reference | [rsasaki0109/RobotNativeEngine](https://github.com/rsasaki0109/RobotNativeEngine) @ `2026-11-23 (branch tip at catalogue time)` |
+| [rssn](entries/physics/apich-organization-rssn/README.md) | rssn is an open-source scientific computing library for Rust: a computer algebra system, numerical kernels and physics simulations behind one small API. | rust | Apache-2.0 | reference | [Apich-Organization/rssn](https://github.com/Apich-Organization/rssn) @ `2026-11-24 (branch tip at catalogue time)` |
 | [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |
 | [runmat](entries/physics/runmat-org-runmat/README.md) | A high-performance engine for matrix math, physics simulation, and MCAD and ECAD as code. RunMat checks types, sizes and units before anything runs, executes on | rust | Apache-2.0 | reference | [runmat-org/runmat](https://github.com/runmat-org/runmat) @ `0359e282f5d0` |
 | [rust_box2d](entries/physics/bastacyclop-rust-box2d/README.md) | Rust binding for Box2D | rust | Zlib | vendored | [Bastacyclop/rust_box2d](https://github.com/Bastacyclop/rust_box2d) @ `4f2b01aebac4` |
@@ -990,6 +995,7 @@ _Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-
 | [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
 | [sandbox](entries/physics/hakolao-sandbox/README.md) | 2D Pixel Physics Simulator | rust | Apache-2.0 | reference | [hakolao/sandbox](https://github.com/hakolao/sandbox) @ `2023-05-10 (branch tip at catalogue time)` |
 | [sat-js](entries/physics/jriecken-sat-js/README.md) | A simple JavaScript library for performing 2D collision detection | javascript | MIT | reference | [jriecken/sat-js](https://github.com/jriecken/sat-js) @ `2021-04-05 (branch tip at catalogue time)` |
+| [sbixel](entries/physics/gale93-sbixel/README.md) | 🧪 A simple pixel physics simulator in Rust using Macroquad  | rust | MIT | reference | [gale93/sbixel](https://github.com/gale93/sbixel) @ `2025-08-07 (branch tip at catalogue time)` |
 | [SIMple-Gravity](entries/physics/mkhan45-simple-gravity/README.md) | Gravity simulator using Newton's Law of Universal Gravitation, made to help teach physics | rust | GPL-3.0 | reference | [mkhan45/SIMple-Gravity](https://github.com/mkhan45/SIMple-Gravity) @ `a0c4a9a14ac9` |
 | [SIMple-Mechanics](entries/physics/mkhan45-simple-mechanics/README.md) | An educational physics sim for high school physics, part of the SIMple Physics project | rust | GPL-3.0 | reference | [mkhan45/SIMple-Mechanics](https://github.com/mkhan45/SIMple-Mechanics) @ `b5b2b8ed6ba1` |
 | [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
