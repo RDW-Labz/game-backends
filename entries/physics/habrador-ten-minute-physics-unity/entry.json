@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T00:02:37Z",
+ "category": "physics",
+ "commit": "da888302b962",
+ "delivery": "vendored",
+ "description": "Habrador/Ten-Minute-Physics-Unity \u2014 Implementations in Unity of the Ten Minute Physics YouTube channel. Instead of using Unity's built-in physics engine, you will learn how to make your own XPBD based physics engine. This is useful if you want to simulate ropes, cloth, tires, etc. You will also learn how to make fluid simulations and soft body physics.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Ten-Minute-Physics-Unity",
+ "size_bytes": 2356911,
+ "slug": "habrador-ten-minute-physics-unity",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 364,
+ "system": "Implementations in Unity of the Ten Minute Physics YouTube channel. Instead of using Unity's built-in physics engine, you will learn how to make your own XPBD b",
+ "upstream": "https://github.com/Habrador/Ten-Minute-Physics-Unity",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

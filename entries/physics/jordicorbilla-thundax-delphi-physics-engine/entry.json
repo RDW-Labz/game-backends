@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:02:41Z",
+ "category": "physics",
+ "commit": "2025-02-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JordiCorbilla/thundax-delphi-physics-engine \u2014 \ud83d\udef4  \"Thundax Delphi Physics Engine\" is a Delphi-based 2D physics engine for simulations and visualizations. It employs Pascal and is ideal for learning and experimenting with 2D physics concepts.",
+ "language": "pascal",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "thundax-delphi-physics-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jordicorbilla-thundax-delphi-physics-engine",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 81,
+ "system": "\ud83d\udef4  \"Thundax Delphi Physics Engine\" is a Delphi-based 2D physics engine for simulations and visualizations. It employs Pascal and is ideal for learning and exper",
+ "upstream": "https://github.com/JordiCorbilla/thundax-delphi-physics-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:02:41Z",
+ "category": "physics",
+ "commit": "2026-09-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ThePhysicsGuys/Physics3D \u2014 A 3D physics engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Physics3D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "thephysicsguys-physics3d",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 329,
+ "system": "A 3D physics engine",
+ "upstream": "https://github.com/ThePhysicsGuys/Physics3D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

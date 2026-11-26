@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T00:02:40Z",
+ "category": "physics",
+ "commit": "5945c358c898",
+ "delivery": "vendored",
+ "description": "jesses/wck \u2014 Box2d Flash Alchemy Port + World Construction Kit (AS3 Physics Engine)",
+ "language": "actionscript",
+ "license": "Zlib",
+ "license_file": "Box2D.h",
+ "license_verdict": "clean",
+ "name": "wck",
+ "size_bytes": 589491,
+ "slug": "jesses-wck",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 354,
+ "system": "Box2d Flash Alchemy Port + World Construction Kit (AS3 Physics Engine)",
+ "upstream": "https://github.com/jesses/wck",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

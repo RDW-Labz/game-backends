@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:02:41Z",
+ "category": "physics",
+ "commit": "2026-09-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NarcisCalin/Galaxy-Engine \u2014 Galaxy Engine is a fully interactive particle physics engine. Play with tens or hundreds of thousands of particles in real time",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Galaxy-Engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "narciscalin-galaxy-engine",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 347,
+ "system": "Galaxy Engine is a fully interactive particle physics engine. Play with tens or hundreds of thousands of particles in real time",
+ "upstream": "https://github.com/NarcisCalin/Galaxy-Engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

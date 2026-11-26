@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:02:41Z",
+ "category": "physics",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "reworks-org/galaxy \u2014 C++23 Game Engine. Built on data-driven design principles and agile software engineering.",
+ "language": "c",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "galaxy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "reworks-org-galaxy",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 87,
+ "system": "C++23 Game Engine. Built on data-driven design principles and agile software engineering.",
+ "upstream": "https://github.com/reworks-org/galaxy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

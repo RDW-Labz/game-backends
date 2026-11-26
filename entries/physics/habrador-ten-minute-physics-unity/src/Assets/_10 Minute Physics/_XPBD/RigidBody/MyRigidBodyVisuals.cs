@@ -1,0 +1,92 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace XPBD
+{
+    //The visual objects showing the rigidbody
+    //simple object use to simulate the physics and act as collider
+    //and more detailed object for making it look good
+    //Can maybe be seen as Unitys Gameobject
+    public class MyRigidBodyVisuals
+    {
+        //The gameobject that represents this rigidbody
+        //Can be seen as the collider
+        public readonly GameObject rbVisualObj;
+        //Faster to cache it
+        private readonly Transform rbVisualTrans;
+        //In future tutorials we add a more complicated mesh above this mesh
+        //and we should be able to switch between them
+        public bool showVisualObj = true;
+        //The more detailed object (there can be multiple meshes connected to the simple mesh)
+        public List<GameObject> rbDetailedObjs = new();
+        public List<Transform> rbDetailedTrans = new();
+
+        //Get ID of the collider
+        public int ID => rbVisualObj.GetInstanceID();
+
+
+
+        public MyRigidBodyVisuals(GameObject rbVisualObj)
+        {
+            this.rbVisualObj = rbVisualObj;
+            this.rbVisualTrans = rbVisualObj.transform;
+
+            this.rbVisualObj.GetComponent<MeshRenderer>().material.color = UnityEngine.Color.white;
+        }
+
+
+
+        //Update pos and rot
+        public void UpdateVisualObjects(Vector3 pos, Quaternion rot)
+        {
+            this.rbVisualTrans.SetPositionAndRotation(pos, rot);
+
+            if (!this.showVisualObj)
+            {
+                foreach (Transform detailedObjTrans in rbDetailedTrans)
+                {
+                    detailedObjTrans.SetPositionAndRotation(pos, rot);
+                }
+            }
+        }
+
+
+
+        //Update visibility
+        public void ShowHideObjects()
+        {
+            //We cant deactivate the object because then the collider wont work with raycasting
+            //this.rbVisualObj.SetActive(this.showVisualObj);
+            
+            this.rbVisualObj.GetComponent<MeshRenderer>().enabled = this.showVisualObj;
+
+            foreach (GameObject obj in this.rbDetailedObjs)
+            {
+                obj.SetActive(!this.showVisualObj);
+            }
+        }
+
+
+
+        //Add detailed obj
+        public void AddDetailedObject(GameObject detailedObj)
+        {
+            this.rbDetailedObjs.Add(detailedObj);
+            this.rbDetailedTrans.Add(detailedObj.transform);
+        }
+
+
+
+        //Destroy all objects
+        public void Dispose()
+        {
+            GameObject.Destroy(rbVisualObj);
+
+            foreach (GameObject detailedObj in rbDetailedObjs)
+            {
+                GameObject.Destroy(detailedObj);
+            }
+        }
+    }
+}

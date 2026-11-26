@@ -3494,3 +3494,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/urlab-sim-unrealroboticslab
   - reference physics/taichi-dev-taichi-elements
   - reference physics/phong13-bulletsharpunity3d
+
+- **2026-11-26 00:02 UTC** — tick 905: +2 screened, +4 reference, 51 skipped, catalogue=1846
+  - added physics/habrador-ten-minute-physics-unity (MIT, vendored)
+  - added physics/jesses-wck (Zlib, vendored)
+  - reference physics/narciscalin-galaxy-engine
+  - reference physics/thephysicsguys-physics3d
+  - reference physics/reworks-org-galaxy
+  - reference physics/jordicorbilla-thundax-delphi-physics-engine

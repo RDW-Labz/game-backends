@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 201 | 45 | 156 |
+| [physics](#physics) — Physics | 207 | 47 | 160 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-
 
 ## physics
 
-**Physics** — 201 entries
+**Physics** — 207 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -888,6 +888,8 @@ _Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Flow](entries/physics/nvidiagameworks-flow/README.md) | Flow is a sparse grid-based fluid simulation library for real-time applications.  | c | unknown | reference | [NVIDIAGameWorks/Flow](https://github.com/NVIDIAGameWorks/Flow) @ `2025-03-31 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
+| [galaxy](entries/physics/reworks-org-galaxy/README.md) | C++23 Game Engine. Built on data-driven design principles and agile software engineering. | c | Apache-2.0 | reference | [reworks-org/galaxy](https://github.com/reworks-org/galaxy) @ `2026-11-21 (branch tip at catalogue time)` |
+| [Galaxy-Engine](entries/physics/narciscalin-galaxy-engine/README.md) | Galaxy Engine is a fully interactive particle physics engine. Play with tens or hundreds of thousands of particles in real time | c++ | MIT | reference | [NarcisCalin/Galaxy-Engine](https://github.com/NarcisCalin/Galaxy-Engine) @ `2026-09-25 (branch tip at catalogue time)` |
 | [games201](entries/physics/taichi-dev-games201/README.md) | Advanced Physics Engines 2020: A Hands-on Tutorial | python | unknown | reference | [taichi-dev/games201](https://github.com/taichi-dev/games201) @ `2020-11-23 (branch tip at catalogue time)` |
 | [GDCustomRaycastVehicle](entries/physics/tobalation-gdcustomraycastvehicle/README.md) | A simple custom raycast vehicle implementation | gdscript | MIT | vendored | [Tobalation/GDCustomRaycastVehicle](https://github.com/Tobalation/GDCustomRaycastVehicle) @ `8d608d28b5f5` |
 | [Gepe3D](entries/physics/gonkee-gepe3d/README.md) | Gonkee's Epic Physics Engine 3D (Gepe3D) | c# | MIT | reference | [Gonkee/Gepe3D](https://github.com/Gonkee/Gepe3D) @ `2026-11-04 (branch tip at catalogue time)` |
@@ -950,6 +952,7 @@ _Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-
 | [phaser-box2d](entries/physics/phaserjs-phaser-box2d/README.md) | A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences. | javascript | MIT | reference | [phaserjs/phaser-box2d](https://github.com/phaserjs/phaser-box2d) @ `2025-04-03 (branch tip at catalogue time)` |
 | [phy](entries/physics/lo-th-phy/README.md) | Physics for three. Game engine  | javascript | MIT | reference | [lo-th/phy](https://github.com/lo-th/phy) @ `7fe6ca802f58` |
 | [Physics-based_Animation_2025S](entries/physics/nobuyuki83-physics-based-animation-2025s/README.md) | Physics Based Animation 2025S | rust | MIT | reference | [nobuyuki83/Physics-based_Animation_2025S](https://github.com/nobuyuki83/Physics-based_Animation_2025S) @ `2025-07-14 (branch tip at catalogue time)` |
+| [Physics3D](entries/physics/thephysicsguys-physics3d/README.md) | A 3D physics engine | c++ | MIT | reference | [ThePhysicsGuys/Physics3D](https://github.com/ThePhysicsGuys/Physics3D) @ `2026-09-21 (branch tip at catalogue time)` |
 | [physicsRus](entries/physics/juhl-physicsrus/README.md) | 2D rigid body physics engine & integrated WYSIWYG editor written in Javascript. | javascript | MIT | vendored | [juhl/physicsRus](https://github.com/juhl/physicsRus) @ `6481e59931c4` |
 | [Physix-go](entries/physics/rudransh61-physix-go/README.md) | A simple Physics engine in GoLang | go | MIT | vendored | [rudransh61/Physix-go](https://github.com/rudransh61/Physix-go) @ `345e56f833a5` |
 | [phyz](entries/physics/muni-works-phyz/README.md) | differentiable physics engine for rust | rust | MIT | reference | [muni-works/phyz](https://github.com/muni-works/phyz) @ `2026-11-10 (branch tip at catalogue time)` |
@@ -997,10 +1000,12 @@ _Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-
 | [taichi_elements](entries/physics/taichi-dev-taichi-elements/README.md) | High-performance multi-material continuum physics engine in Taichi | python | MIT | reference | [taichi-dev/taichi_elements](https://github.com/taichi-dev/taichi_elements) @ `2024-04-14 (branch tip at catalogue time)` |
 | [taro](entries/physics/cloud9c-taro/README.md) | A lightweight 3D game engine for the web. | javascript | MIT | reference | [cloud9c/taro](https://github.com/cloud9c/taro) @ `2025-02-13 (branch tip at catalogue time)` |
 | [ten-minute-physics-rs](entries/physics/lucas-schuermann-ten-minute-physics-rs/README.md) | Reimplementation of Matthias Müller's "Ten Minute Physics" demos in Rust with WASM + WebGL | rust | MIT | vendored | [lucas-schuermann/ten-minute-physics-rs](https://github.com/lucas-schuermann/ten-minute-physics-rs) @ `e5c448022c80` |
+| [Ten-Minute-Physics-Unity](entries/physics/habrador-ten-minute-physics-unity/README.md) | Implementations in Unity of the Ten Minute Physics YouTube channel. Instead of using Unity's built-in physics engine, you will learn how to make your own XPBD b | c# | MIT | vendored | [Habrador/Ten-Minute-Physics-Unity](https://github.com/Habrador/Ten-Minute-Physics-Unity) @ `da888302b962` |
 | [thetawave](entries/physics/thetawavegame-thetawave/README.md) | A physics based, space shooter game made with Rust and the Bevy engine. | rust | MIT | vendored | [thetawavegame/thetawave](https://github.com/thetawavegame/thetawave) @ `94fad04fb913` |
 | [three-gpu-particle-system](entries/physics/fazeaction-three-gpu-particle-system/README.md) | GPU based particle system for three.js. Heavily based on tdl library (https://github.com/greggman/tdl) | javascript | unknown | reference | [fazeaction/three-gpu-particle-system](https://github.com/fazeaction/three-gpu-particle-system) @ `2023-03-06 (branch tip at catalogue time)` |
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
+| [thundax-delphi-physics-engine](entries/physics/jordicorbilla-thundax-delphi-physics-engine/README.md) | 🛴  "Thundax Delphi Physics Engine" is a Delphi-based 2D physics engine for simulations and visualizations. It employs Pascal and is ideal for learning and exper | pascal | MIT | reference | [JordiCorbilla/thundax-delphi-physics-engine](https://github.com/JordiCorbilla/thundax-delphi-physics-engine) @ `2025-02-09 (branch tip at catalogue time)` |
 | [tork](entries/physics/adrenak-tork/README.md) | Vehicle physics for Unity | c# | MIT | vendored | [adrenak/tork](https://github.com/adrenak/tork) @ `17ae6323c007` |
 | [UnityDotsCharacterController](entries/physics/ssell-unitydotscharactercontroller/README.md) | Basic Character Controller Using ECS and Unity.Physics Packages | c# | MIT | vendored | [ssell/UnityDotsCharacterController](https://github.com/ssell/UnityDotsCharacterController) @ `0ae709bb2015` |
 | [UnrealRoboticsLab](entries/physics/urlab-sim-unrealroboticslab/README.md) | A high-fidelity, open-source robotics simulator integrating Unreal Engine's photorealistic rendering with MuJoCo's precision physics. | c++ | Apache-2.0 | reference | [URLab-Sim/UnrealRoboticsLab](https://github.com/URLab-Sim/UnrealRoboticsLab) @ `2026-11-14 (branch tip at catalogue time)` |
@@ -1014,6 +1019,7 @@ _Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-
 | [Verly.js](entries/physics/anuraghazra-verly-js/README.md) | :red_circle::wavy_dash::large_blue_circle::wavy_dash::black_circle: Easy to integrate Verlet physics engine. :link:  | javascript | MIT | reference | [anuraghazra/Verly.js](https://github.com/anuraghazra/Verly.js) @ `2025-02-19 (branch tip at catalogue time)` |
 | [VMF-to-PBR](entries/physics/lavashikk-vmf-to-pbr/README.md) | A custom VMF pre-processor and raytraced light baker for Source Engine. Bridges legacy lighting with modern Physically Based Shading (PBS) by generating cluster | rust | unknown | reference | [LaVashikk/VMF-to-PBR](https://github.com/LaVashikk/VMF-to-PBR) @ `2026-05-17 (branch tip at catalogue time)` |
 | [VPhysics-Jolt](entries/physics/misyltoad-vphysics-jolt/README.md) | Volt (VPhysics Jolt) is a replacement physics module for the Source Engine. | c++ | MIT | reference | [misyltoad/VPhysics-Jolt](https://github.com/misyltoad/VPhysics-Jolt) @ `2025-05-18 (branch tip at catalogue time)` |
+| [wck](entries/physics/jesses-wck/README.md) | Box2d Flash Alchemy Port + World Construction Kit (AS3 Physics Engine) | actionscript | Zlib | vendored | [jesses/wck](https://github.com/jesses/wck) @ `5945c358c898` |
 | [webphysics](entries/physics/jure-webphysics/README.md) | WebGPU physics engine based on the AVBD solver | typescript | MIT | vendored | [jure/webphysics](https://github.com/jure/webphysics) @ `96b043c88dc2` |
 | [Woxi](entries/physics/ad-si-woxi/README.md) | Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized) | rust | AGPL-3.0 | reference | [ad-si/Woxi](https://github.com/ad-si/Woxi) @ `2026-11-23 (branch tip at catalogue time)` |
 
