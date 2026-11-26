@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T13:14:40Z",
+ "category": "engines",
+ "commit": "e049f3fd4c44",
+ "delivery": "reference",
+ "description": "halfrost/threes-ai \u2014 \ud83c\udfc6 Threes! AI: deck-aware expectimax, N-tuple TD learning, and AlphaZero",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "threes-ai",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 647042,
+ "slug": "halfrost-threes-ai",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 167,
+ "system": "\ud83c\udfc6 Threes! AI: deck-aware expectimax, N-tuple TD learning, and AlphaZero",
+ "upstream": "https://github.com/halfrost/threes-ai",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

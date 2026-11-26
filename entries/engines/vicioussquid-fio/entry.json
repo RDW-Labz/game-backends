@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T13:14:45Z",
+ "category": "engines",
+ "commit": "f5a4bd0ca9a3",
+ "delivery": "reference",
+ "description": "ViciousSquid/Fio \u2014 Unified Liminal World Editor, Procedural Engine & Game Creation Toolkit inspired by Radiant and Hammer. Optimised for low-power CPUs.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Fio",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 16553786,
+ "slug": "vicioussquid-fio",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 152,
+ "system": "Unified Liminal World Editor, Procedural Engine & Game Creation Toolkit inspired by Radiant and Hammer. Optimised for low-power CPUs.",
+ "upstream": "https://github.com/ViciousSquid/Fio",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

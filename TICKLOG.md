@@ -3724,3 +3724,7 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gami-fied-gami-fied
 
 - **2026-11-26 12:58 UTC** — tick 953: +0 screened, +0 reference, 60 skipped, catalogue=1972
+
+- **2026-11-26 13:14 UTC** — tick 954: +2 screened, +0 reference, 58 skipped, catalogue=1974
+  - added engines/halfrost-threes-ai (GPL-3.0, reference)
+  - added engines/vicioussquid-fio (MIT, reference)

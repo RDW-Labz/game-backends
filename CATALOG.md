@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 12:58 UTC · 1972 entries · 497 vendored, 1475 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 801 | 192 | 609 |
+| [engines](#engines) — Game engines and engine subsystems | 803 | 192 | 611 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 12:58 UTC · 1972 entries · 497 vendored, 1475 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 801 entries
+**Game engines and engine subsystems** — 803 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -266,6 +266,7 @@ _Generated 2026-11-26 12:58 UTC · 1972 entries · 497 vendored, 1475 reference-
 | [Faster.Map](entries/engines/wsm2110-faster-map/README.md) | Faster.Map — A high-performance SIMD-accelerated .NET dictionary and hashmap designed for extreme speed, scalability, and low memory overhead. Ideal for real-ti | c# | MIT | reference | [Wsm2110/Faster.Map](https://github.com/Wsm2110/Faster.Map) @ `2026-07-26 (branch tip at catalogue time)` |
 | [feldspar](entries/engines/bonsairobo-feldspar/README.md) | Procedural voxel worlds for Bevy Engine. | rust | MIT | reference | [bonsairobo/feldspar](https://github.com/bonsairobo/feldspar) @ `2022-08-13 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
+| [Fio](entries/engines/vicioussquid-fio/README.md) | Unified Liminal World Editor, Procedural Engine & Game Creation Toolkit inspired by Radiant and Hammer. Optimised for low-power CPUs. | python | MIT | reference | [ViciousSquid/Fio](https://github.com/ViciousSquid/Fio) @ `f5a4bd0ca9a3` |
 | [firefly](entries/engines/pvdoriginal-firefly/README.md) | 2D Lighting for the Bevy Game Engine  | rust | Apache-2.0 | vendored | [PVDoriginal/firefly](https://github.com/PVDoriginal/firefly) @ `6cf3557b8e5b` |
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
@@ -708,6 +709,7 @@ _Generated 2026-11-26 12:58 UTC · 1972 entries · 497 vendored, 1475 reference-
 | [theodoric](entries/engines/tlmader-theodoric/README.md) | A 2D top-down "action RPG" built with the Phaser HTML5 game framework | javascript | none | reference | [tlmader/theodoric](https://github.com/tlmader/theodoric) @ `ae447ad8b867` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [ThreeRT](entries/engines/meshy-dev-threert/README.md) | Hardware ray-traced three.js: a real-time path tracer behind a three.js-style API. Rust + wgpu engine, TypeScript scene and gameplay packages. | rust | MIT | reference | [meshy-dev/ThreeRT](https://github.com/meshy-dev/ThreeRT) @ `167a374744d6` |
+| [threes-ai](entries/engines/halfrost-threes-ai/README.md) | 🏆 Threes! AI: deck-aware expectimax, N-tuple TD learning, and AlphaZero | python | GPL-3.0 | reference | [halfrost/threes-ai](https://github.com/halfrost/threes-ai) @ `e049f3fd4c44` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thyseus](entries/engines/jaimegensler-thyseus/README.md) | An archetypal Entity Component System, built entirely in Typescript | typescript | MIT | reference | [JaimeGensler/thyseus](https://github.com/JaimeGensler/thyseus) @ `2024-05-06 (branch tip at catalogue time)` |
 | [tick-knock](entries/engines/mayakwd-tick-knock/README.md) | Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript | typescript | MIT | reference | [mayakwd/tick-knock](https://github.com/mayakwd/tick-knock) @ `2026-10-01 (branch tip at catalogue time)` |
