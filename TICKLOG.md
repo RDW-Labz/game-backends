@@ -3806,3 +3806,9 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 18:02 UTC** — tick 972: +2 screened, +0 reference, 31 skipped, catalogue=2016
   - added math/tomstewart89-basiclinearalgebra (MIT, vendored)
   - added math/rcppcore-rcpparmadillo (Apache-2.0, vendored)
+
+- **2026-11-26 18:18 UTC** — tick 973: +2 screened, +2 reference, 40 skipped, catalogue=2020
+  - added math/andrewssobral-dtt (MIT, vendored)
+  - added math/ferd36-quaternions (MIT, vendored)
+  - reference math/upc-virvig-pymotion
+  - reference math/spongepowered-math

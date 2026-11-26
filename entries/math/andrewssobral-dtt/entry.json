@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:18:36Z",
+ "category": "math",
+ "commit": "9bb67277b435",
+ "delivery": "vendored",
+ "description": "andrewssobral/dtt \u2014 A C++ header-only for data transfer between linear algebra libraries (Eigen, Armadillo, OpenCV, ArrayFire, LibTorch).",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "dtt",
+ "size_bytes": 30035,
+ "slug": "andrewssobral-dtt",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 85,
+ "system": "A C++ header-only for data transfer between linear algebra libraries (Eigen, Armadillo, OpenCV, ArrayFire, LibTorch).",
+ "upstream": "https://github.com/andrewssobral/dtt",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

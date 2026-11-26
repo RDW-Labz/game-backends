@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:18:38Z",
+ "category": "math",
+ "commit": "a5ef2e58b05b",
+ "delivery": "vendored",
+ "description": "ferd36/quaternions \u2014 A blazingly fast C++ library to work with quaternions :zap:",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "quaternions",
+ "size_bytes": 94204,
+ "slug": "ferd36-quaternions",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 79,
+ "system": "A blazingly fast C++ library to work with quaternions :zap:",
+ "upstream": "https://github.com/ferd36/quaternions",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

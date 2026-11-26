@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 18:18 UTC · 2020 entries · 516 vendored, 1504 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
-| [math](#math) — Math libraries | 173 | 53 | 120 |
+| [math](#math) — Math libraries | 177 | 55 | 122 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
@@ -1108,7 +1108,7 @@ _Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-
 
 ## math
 
-**Math libraries** — 173 entries
+**Math libraries** — 177 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1138,6 +1138,7 @@ _Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-
 | [cute_headers](entries/math/randygaul-cute-headers/README.md) | Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games | c | unknown | reference | [RandyGaul/cute_headers](https://github.com/RandyGaul/cute_headers) @ `2026-11-03 (branch tip at catalogue time)` |
 | [DecimalMath](entries/math/alcueca-decimalmath/README.md) | Smart contract implementing fixed point math operations using structs for type checking. | solidity | GPL-3.0 | reference | [alcueca/DecimalMath](https://github.com/alcueca/DecimalMath) @ `2020-09-17 (branch tip at catalogue time)` |
 | [DirectXMath](entries/math/directxmath/README.md) | SIMD math library (SSE/AVX/NEON) for games | c++ | MIT | vendored | [microsoft/DirectXMath](https://github.com/microsoft/DirectXMath) @ `fef99048e3da` |
+| [dtt](entries/math/andrewssobral-dtt/README.md) | A C++ header-only for data transfer between linear algebra libraries (Eigen, Armadillo, OpenCV, ArrayFire, LibTorch). | c++ | MIT | vendored | [andrewssobral/dtt](https://github.com/andrewssobral/dtt) @ `9bb67277b435` |
 | [dual_quaternions](entries/math/achllle-dual-quaternions/README.md) | dual quaternions libraries | python | MIT | reference | [Achllle/dual_quaternions](https://github.com/Achllle/dual_quaternions) @ `2025-12-01 (branch tip at catalogue time)` |
 | [dungeons-of-noudar](entries/math/thefakemontyontherun-dungeons-of-noudar/README.md) | A first person dungeon-crawler for DOS, written in C++, using software rendering and fixed point math | c++ | BSD-2-Clause | vendored | [TheFakeMontyOnTheRun/dungeons-of-noudar](https://github.com/TheFakeMontyOnTheRun/dungeons-of-noudar) @ `03e94de32261` |
 | [dvector](entries/math/barerose-dvector/README.md) | Portable, single-file, 2D/3D vector/quaternion/matrix math library | c | CC0-1.0 | reference | [BareRose/dvector](https://github.com/BareRose/dvector) @ `2021-01-12 (branch tip at catalogue time)` |
@@ -1196,6 +1197,7 @@ _Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-
 | [linmath.h](entries/math/datenwolf-linmath-h/README.md) | a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions | c | WTFPL | reference | [datenwolf/linmath.h](https://github.com/datenwolf/linmath.h) @ `2023-05-31 (branch tip at catalogue time)` |
 | [manif](entries/math/artivis-manif/README.md) | A small C++11 header-only library for Lie theory. | c++ | MIT | vendored | [artivis/manif](https://github.com/artivis/manif) @ `65166b3bfd15` |
 | [math](entries/math/fireblade-engine-math/README.md) | A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support. | swift | MIT | reference | [fireblade-engine/math](https://github.com/fireblade-engine/math) @ `2026-11-14 (branch tip at catalogue time)` |
+| [math](entries/math/spongepowered-math/README.md) | Immutable math library for Java that offers easy conversion between math types, fast trigonometric functions, vectors, matrices, complex numbers, quaternions, a | java | MIT | reference | [SpongePowered/math](https://github.com/SpongePowered/math) @ `2026-11-21 (branch tip at catalogue time)` |
 | [math](entries/math/stan-dev-math/README.md) | The Stan Math Library is a C++ template library for automatic differentiation of any order using forward, reverse, and mixed modes.  It includes a range of buil | c++ | BSD-3-Clause | reference | [stan-dev/math](https://github.com/stan-dev/math) @ `2026-11-20 (branch tip at catalogue time)` |
 | [math](entries/math/zmij-math/README.md) | Small C++17 library for vector and matrix computations | c++ | Apache-2.0 | reference | [zmij/math](https://github.com/zmij/math) @ `2022-02-14 (branch tip at catalogue time)` |
 | [math-php](entries/math/markrogoyski-math-php/README.md) | Powerful modern math library for PHP: Features descriptive statistics and regressions; Continuous and discrete probability distributions; Linear algebra with ma | php | MIT | vendored | [markrogoyski/math-php](https://github.com/markrogoyski/math-php) @ `1b53720fca6d` |
@@ -1229,6 +1231,7 @@ _Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-
 | [pylops](entries/math/pylops-pylops/README.md) | PyLops – A Linear-Operator Library for Python | python | LGPL-3.0 | reference | [PyLops/pylops](https://github.com/PyLops/pylops) @ `15ee1791b810` |
 | [pymadcad](entries/math/jimy-byerley-pymadcad/README.md) |  Simple yet powerful CAD (Computer Aided Design) library, written with Python. | python | LGPL-3.0 | reference | [jimy-byerley/pymadcad](https://github.com/jimy-byerley/pymadcad) @ `2026-10-25 (branch tip at catalogue time)` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
+| [pymotion](entries/math/upc-virvig-pymotion/README.md) | A Python library for working with motion data in numpy or PyTorch | python | MIT | reference | [UPC-ViRVIG/pymotion](https://github.com/UPC-ViRVIG/pymotion) @ `2026-06-19 (branch tip at catalogue time)` |
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [pyRANSAC-3D](entries/math/leomariga-pyransac-3d/README.md) | Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines. | python | Apache-2.0 | reference | [leomariga/pyRANSAC-3D](https://github.com/leomariga/pyRANSAC-3D) @ `2026-08-28 (branch tip at catalogue time)` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -1240,6 +1243,7 @@ _Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-
 | [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
 | [Quaternion_Library](entries/math/mauricegit-quaternion-library/README.md) | A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q | c | ISC | reference | [MauriceGit/Quaternion_Library](https://github.com/MauriceGit/Quaternion_Library) @ `2016-09-07 (branch tip at catalogue time)` |
+| [quaternions](entries/math/ferd36-quaternions/README.md) | A blazingly fast C++ library to work with quaternions :zap: | c++ | MIT | vendored | [ferd36/quaternions](https://github.com/ferd36/quaternions) @ `a5ef2e58b05b` |
 | [qvm](entries/math/boostorg-qvm/README.md) | Boost Quaternions, Vectors, Matrices library | c++ | BSL-1.0 | reference | [boostorg/qvm](https://github.com/boostorg/qvm) @ `2026-11-11 (branch tip at catalogue time)` |
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [RandLAPACK](entries/math/ballisticla-randlapack/README.md) | A high-performance C++ library for randomized numerical linear algebra | c++ | unknown | reference | [BallisticLA/RandLAPACK](https://github.com/BallisticLA/RandLAPACK) @ `2026-11-23 (branch tip at catalogue time)` |
