@@ -3691,3 +3691,5 @@ One line per 15-minute extension tick, newest last.
   - added procgen/mlknz-dungeonizer-js (MIT, vendored)
 
 - **2026-11-26 10:18 UTC** — tick 943: +0 screened, +0 reference, 21 skipped, catalogue=1959
+
+- **2026-11-26 10:34 UTC** — tick 944: +0 screened, +0 reference, 22 skipped, catalogue=1959
