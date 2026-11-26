@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T08:10:37Z",
+ "category": "netcode",
+ "commit": "5c02c0cfcf05",
+ "delivery": "reference",
+ "description": "shiwano/submarine \u2014 :whale: A mobile game that is made with Unity3D, RoR, and WebSocket server written in Go.",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "submarine",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 3190070,
+ "slug": "shiwano-submarine",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 115,
+ "system": ":whale: A mobile game that is made with Unity3D, RoR, and WebSocket server written in Go.",
+ "upstream": "https://github.com/shiwano/submarine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

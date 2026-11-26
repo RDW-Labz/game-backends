@@ -3661,3 +3661,6 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 07:38 UTC** — tick 933: +0 screened, +0 reference, 53 skipped, catalogue=1947
 
 - **2026-11-26 07:54 UTC** — tick 934: +0 screened, +0 reference, 19 skipped, catalogue=1947
+
+- **2026-11-26 08:10 UTC** — tick 935: +1 screened, +0 reference, 36 skipped, catalogue=1948
+  - added netcode/shiwano-submarine (none, reference)

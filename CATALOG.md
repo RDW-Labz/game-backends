@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 07:54 UTC · 1947 entries · 485 vendored, 1462 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 08:10 UTC · 1948 entries · 485 vendored, 1463 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-26 07:54 UTC · 1947 entries · 485 vendored, 1462 reference-
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
-| [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
+| [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
 
@@ -1577,7 +1577,7 @@ _Generated 2026-11-26 07:54 UTC · 1947 entries · 485 vendored, 1462 reference-
 
 ## netcode
 
-**Networking / netcode** — 168 entries
+**Networking / netcode** — 169 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1721,6 +1721,7 @@ _Generated 2026-11-26 07:54 UTC · 1947 entries · 485 vendored, 1462 reference-
 | [sf4e](entries/netcode/fabeloper-sf4e/README.md) | Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e | c++ | MIT | vendored | [fabeloper/sf4e](https://github.com/fabeloper/sf4e) @ `e01d5ab3a4ac` |
 | [snowglobe](entries/netcode/hastearcade-snowglobe/README.md) | A JS port of CrystalOrb | typescript | Apache-2.0 | vendored | [hastearcade/snowglobe](https://github.com/hastearcade/snowglobe) @ `3511de2d9379` |
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
+| [submarine](entries/netcode/shiwano-submarine/README.md) | :whale: A mobile game that is made with Unity3D, RoR, and WebSocket server written in Go. | c# | none | reference | [shiwano/submarine](https://github.com/shiwano/submarine) @ `5c02c0cfcf05` |
 | [summer](entries/netcode/summerengine-summer/README.md) | The game engine built for AI. Includes MCP server, CLI and skills that let any agent build, test, publish, and grow full games with Summer Engine. | typescript | MIT | vendored | [SummerEngine/summer](https://github.com/SummerEngine/summer) @ `74a5a9d7e823` |
 | [Summer](entries/netcode/swingfrog-summer/README.md) | 这是一个轻量级的、一站式的java游戏服务器框架，也可用于开发简单的web服务。基于netty实现了高性能通讯，支持tcp、http、websocket等协议，支持protobuf、json两种数据格式，支持以配置的形式轻松开启多端口网络服务。支持RPC远程调用，支持以优雅的方式实现远程调用，支持调用超时重试、幂等调用 | java | Apache-2.0 | reference | [SwingFrog/Summer](https://github.com/SwingFrog/Summer) @ `2025-04-17 (branch tip at catalogue time)` |
 | [suroi — packets](entries/netcode/suroi-packets/README.md) | network transport, protocol, replication or server loop | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
