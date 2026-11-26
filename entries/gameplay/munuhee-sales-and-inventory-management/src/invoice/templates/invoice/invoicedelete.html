@@ -1,0 +1,6 @@
+{% extends "store/confirm_delete.html" %}
+{% block title %}Delete invoice{% endblock %}
+{% block heading %}Delete invoice {{ object.invoice_number }}?{% endblock %}
+{% block message %}{{ object.customer_name }}, total due {{ object.grand_total }}.{% endblock %}
+{% block confirm_label %}Delete{% endblock %}
+{% block cancel_url %}{% url 'invoicelist' %}{% endblock %}

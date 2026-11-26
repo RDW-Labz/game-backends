@@ -1,0 +1,33 @@
+{% extends "store/base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Categories</h1></div>
+  {% if can_manage %}<div class="page-actions"><a class="btn btn-primary" href="{% url 'category-create' %}"><i class="fa-solid fa-plus me-1"></i> Add category</a></div>{% endif %}
+</div>
+<div class="card table-card form-narrow">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Search categories" %}</div>
+  {% if categories %}
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Name</th><th class="num">Products</th><th></th></tr></thead>
+    <tbody>
+      {% for category in categories %}
+      <tr>
+        <td><a href="{% url 'category-detail' category.pk %}">{{ category.name }}</a></td>
+        <td class="num">{{ category.item_count }}</td>
+        <td class="row-actions">
+          {% if can_manage %}
+          <a href="{% url 'category-update' category.pk %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          <a class="danger" href="{% url 'category-delete' category.pk %}" title="Delete"><i class="fa-solid fa-trash"></i></a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-tags" text="No categories yet." %}
+  {% endif %}
+</div>
+{% endblock content %}

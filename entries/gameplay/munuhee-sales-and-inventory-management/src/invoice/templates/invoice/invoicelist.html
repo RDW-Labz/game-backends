@@ -1,0 +1,41 @@
+{% extends "store/base.html" %}
+{% load formatting %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Invoices</h1></div>
+  {% if can_manage %}<div class="page-actions"><a class="btn btn-primary" href="{% url 'invoice-create' %}"><i class="fa-solid fa-plus me-1"></i> New invoice</a></div>{% endif %}
+</div>
+<div class="card table-card">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Search customer, phone, item" %}</div>
+  {% if invoices %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Item</th><th class="num">Qty</th><th class="num">Total due</th><th></th></tr></thead>
+    <tbody>
+      {% for invoice in invoices %}
+      <tr>
+        <td><a href="{% url 'invoice-detail' invoice.slug %}">{{ invoice.invoice_number }}</a></td>
+        <td>{{ invoice.date|date:"d M Y" }}</td>
+        <td>{{ invoice.customer_name }}<div class="small text-muted">{{ invoice.contact_number }}</div></td>
+        <td>{{ invoice.item.name }}</td>
+        <td class="num">{{ invoice.quantity|qty }}</td>
+        <td class="num">{{ invoice.grand_total|money }}</td>
+        <td class="row-actions">
+          <a href="{% url 'invoice-pdf' invoice.slug %}" target="_blank" rel="noopener" title="Print"><i class="fa-solid fa-print"></i></a>
+          {% if can_manage %}
+          <a href="{% url 'invoice-update' invoice.slug %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          <a class="danger" href="{% url 'invoice-delete' invoice.pk %}" title="Delete"><i class="fa-solid fa-trash"></i></a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-file-invoice" text="No invoices yet." %}
+  {% endif %}
+</div>
+{% endblock content %}

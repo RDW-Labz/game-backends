@@ -1,0 +1,5 @@
+{% extends "store/form_page.html" %}
+{% block title %}{% if object %}Rename category{% else %}Add category{% endif %}{% endblock %}
+{% block heading %}{% if object %}Rename {{ object.name }}{% else %}Add category{% endif %}{% endblock %}
+{% block cancel_url %}{% url 'category-list' %}{% endblock %}
+{% block cancel_url2 %}{% url 'category-list' %}{% endblock %}

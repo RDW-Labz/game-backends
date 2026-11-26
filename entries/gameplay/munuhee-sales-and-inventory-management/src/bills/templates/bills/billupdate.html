@@ -1,0 +1,6 @@
+{% extends "store/form_page.html" %}
+{% block title %}Edit bill{% endblock %}
+{% block heading %}Edit bill for {{ object.institution_name }}{% endblock %}
+{% block submit_label %}Save changes{% endblock %}
+{% block cancel_url %}{% url 'bill_list' %}{% endblock %}
+{% block cancel_url2 %}{% url 'bill_list' %}{% endblock %}

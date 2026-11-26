@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T06:50:40Z",
+ "category": "gameplay",
+ "commit": "2024-04-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "psebenick/data-profiling \u2014 a set of scripts to pull meta data and data profiling metrics from relational database systems",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "data-profiling",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "psebenick-data-profiling",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 79,
+ "system": "a set of scripts to pull meta data and data profiling metrics from relational database systems",
+ "upstream": "https://github.com/psebenick/data-profiling",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

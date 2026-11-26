@@ -1,0 +1,40 @@
+{% extends "store/base.html" %}
+{% block title %}Deliveries{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Deliveries</h1></div>
+  <div class="page-actions">
+    {% if can_manage %}<a class="btn btn-export" href="{% querystring _export='xlsx' page=None %}" title="Download deliveries as an Excel workbook"><span class="export-icon"><i class="fa-solid fa-file-excel"></i></span><span>Export</span><span class="export-format">XLSX</span></a>{% endif %}
+    <a class="btn btn-primary" href="{% url 'delivery-create' %}"><i class="fa-solid fa-plus me-1"></i> Schedule delivery</a>
+  </div>
+</div>
+<div class="card table-card">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Search customer, location, item" %}</div>
+  {% if deliveries %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Item</th><th>Customer</th><th>Phone</th><th>Location</th><th>Date</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for delivery in deliveries %}
+      <tr>
+        <td><a href="{% url 'delivery-detail' delivery.pk %}">{{ delivery.item.name|default:"Item removed" }}</a></td>
+        <td>{{ delivery.customer_name|default:"" }}</td>
+        <td>{{ delivery.phone_number|default:"" }}</td>
+        <td>{{ delivery.location|default:"" }}</td>
+        <td>{{ delivery.date|date:"d M Y, H:i" }}</td>
+        <td>{% if delivery.is_delivered %}<span class="status ok">Delivered</span>{% else %}<span class="status warn">Pending</span>{% endif %}</td>
+        <td class="row-actions">
+          <a href="{% url 'delivery-update' delivery.pk %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          {% if can_manage %}<a class="danger" href="{% url 'delivery-delete' delivery.pk %}" title="Delete"><i class="fa-solid fa-trash"></i></a>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-truck" text="No deliveries scheduled." %}
+  {% endif %}
+</div>
+{% endblock content %}

@@ -1,0 +1,6 @@
+{% extends "store/form_page.html" %}
+{% block title %}{% if object %}Edit customer{% else %}Add customer{% endif %}{% endblock %}
+{% block heading %}{% if object %}Edit {{ object.get_full_name }}{% else %}Add customer{% endif %}{% endblock %}
+{% block subheading %}<p class="sub">Loyalty points are earned on sales and cannot be typed in here.</p>{% endblock %}
+{% block cancel_url %}{% url 'customer_list' %}{% endblock %}
+{% block cancel_url2 %}{% url 'customer_list' %}{% endblock %}

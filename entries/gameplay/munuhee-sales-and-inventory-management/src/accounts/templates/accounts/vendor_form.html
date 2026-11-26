@@ -1,0 +1,5 @@
+{% extends "store/form_page.html" %}
+{% block title %}{% if object %}Edit vendor{% else %}Add vendor{% endif %}{% endblock %}
+{% block heading %}{% if object %}Edit {{ object.name }}{% else %}Add vendor{% endif %}{% endblock %}
+{% block cancel_url %}{% url 'vendor-list' %}{% endblock %}
+{% block cancel_url2 %}{% url 'vendor-list' %}{% endblock %}

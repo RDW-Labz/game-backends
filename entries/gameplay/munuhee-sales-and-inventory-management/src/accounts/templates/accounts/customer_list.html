@@ -1,0 +1,35 @@
+{% extends "store/base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Customers</h1></div>
+  <div class="page-actions"><a class="btn btn-primary" href="{% url 'customer_create' %}"><i class="fa-solid fa-plus me-1"></i> Add customer</a></div>
+</div>
+<div class="card table-card">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Search name, phone, email" %}</div>
+  {% if customers %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th class="num">Loyalty points</th><th></th></tr></thead>
+    <tbody>
+      {% for customer in customers %}
+      <tr>
+        <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer.get_full_name }}</a></td>
+        <td>{{ customer.phone|default:"" }}</td>
+        <td>{{ customer.email|default:"" }}</td>
+        <td class="num">{{ customer.loyalty_points }}</td>
+        <td class="row-actions">
+          <a href="{% url 'customer_update' customer.pk %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          {% if can_manage %}<a class="danger" href="{% url 'customer_delete' customer.pk %}" title="Delete"><i class="fa-solid fa-trash"></i></a>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-user-group" text="No customers yet." %}
+  {% endif %}
+</div>
+{% endblock content %}

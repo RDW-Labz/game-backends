@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T06:50:38Z",
+ "category": "gameplay",
+ "commit": "4a9744633cc5",
+ "delivery": "reference",
+ "description": "pj28105/Sales-and-Inventory-Management-System \u2014 Tkinter(Python Module) based GUI application",
+ "language": "python",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Sales-and-Inventory-Management-System",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 61207,
+ "slug": "pj28105-sales-and-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 80,
+ "system": "Tkinter(Python Module) based GUI application",
+ "upstream": "https://github.com/pj28105/Sales-and-Inventory-Management-System",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

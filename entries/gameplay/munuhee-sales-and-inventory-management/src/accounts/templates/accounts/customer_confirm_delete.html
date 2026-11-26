@@ -1,0 +1,6 @@
+{% extends "store/confirm_delete.html" %}
+{% block title %}Delete customer{% endblock %}
+{% block heading %}Delete {{ object.get_full_name }}?{% endblock %}
+{% block message %}Customers with sales on record cannot be deleted.{% endblock %}
+{% block confirm_label %}Delete{% endblock %}
+{% block cancel_url %}{% url 'customer_list' %}{% endblock %}

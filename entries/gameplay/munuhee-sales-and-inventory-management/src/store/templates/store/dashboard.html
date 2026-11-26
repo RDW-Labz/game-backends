@@ -1,0 +1,117 @@
+{% extends "store/base.html" %}
+{% load formatting humanize static %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header dashboard-heading">
+  <div>
+    <div class="eyebrow">Your business at a glance</div>
+    <h1>Welcome back, {{ request.user.profile.display_name|default:request.user.username }}</h1>
+    <p class="sub">{% now "l, d F Y" %}<span class="heading-separator">·</span> Here’s what’s happening today.</p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-primary" href="{% url 'sale-create' %}"><i class="fa-solid fa-cash-register me-1"></i> New sale</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-xl-3">
+    <a class="stat-link" href="{% url 'saleslist' %}"><div class="card stat stat-revenue">
+      <div class="stat-top"><div class="label">Revenue today</div><span class="stat-icon"><i class="fa-solid fa-arrow-trend-up"></i></span></div>
+      <div class="value">{{ revenue_today|money }}</div>
+      <div class="hint">{{ sales_today }} sale{{ sales_today|pluralize }}</div>
+    </div></a>
+  </div>
+  <div class="col-6 col-xl-3">
+    <a class="stat-link" href="{% url 'saleslist' %}"><div class="card stat stat-month">
+      <div class="stat-top"><div class="label">Revenue this month</div><span class="stat-icon"><i class="fa-regular fa-calendar"></i></span></div>
+      <div class="value">{{ revenue_month|money }}</div>
+      <div class="hint">Completed sales only</div>
+    </div></a>
+  </div>
+  <div class="col-6 col-xl-3">
+    <a class="stat-link" href="{% url 'productslist' %}"><div class="card stat stat-products">
+      <div class="stat-top"><div class="label">Products</div><span class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></span></div>
+      <div class="value">{{ products_count|intcomma }}</div>
+      <div class="hint">{{ units_in_stock|intcomma }} units, {{ stock_value|money }}</div>
+    </div></a>
+  </div>
+  <div class="col-6 col-xl-3">
+    <a class="stat-link" href="{% url 'deliveries' %}"><div class="card stat stat-deliveries">
+      <div class="stat-top"><div class="label">Pending deliveries</div><span class="stat-icon"><i class="fa-solid fa-truck-fast"></i></span></div>
+      <div class="value">{{ pending_deliveries|intcomma }}</div>
+      <div class="hint">{{ profiles_count }} active staff, {{ vendors_count }} vendor{{ vendors_count|pluralize }}</div>
+    </div></a>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-8">
+    <div class="card h-100">
+      <div class="card-header">Sales, last 30 days</div>
+      <div class="card-body"><canvas id="salesChart" height="110" aria-label="Sales per day"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">Products by category</div>
+      <div class="card-body">
+        {% if chart_data.categories %}
+          <canvas id="categoryChart" height="220" aria-label="Products by category"></canvas>
+        {% else %}
+          {% include "partials/empty.html" with icon="fa-tags" text="No categories yet." %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card table-card h-100">
+      <div class="card-header d-flex justify-content-between">
+        <span>Low stock</span><small class="text-muted fw-normal">{{ low_stock_threshold }} units or fewer</small>
+      </div>
+      {% if low_stock %}
+      <table class="table table-hover align-middle">
+        <tbody>
+          {% for item in low_stock %}
+          <tr>
+            <td><a href="{% url 'product-detail' item.slug %}">{{ item.name }}</a><div class="small text-muted">{{ item.category.name }}</div></td>
+            <td class="num">{% if item.quantity == 0 %}<span class="status bad">Out of stock</span>{% else %}<span class="status warn">{{ item.quantity }} left</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        {% include "partials/empty.html" with icon="fa-circle-check" text="Everything is well stocked." %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card table-card h-100">
+      <div class="card-header d-flex justify-content-between"><span>Recent sales</span><a class="small fw-normal" href="{% url 'saleslist' %}">View all</a></div>
+      {% if recent_sales %}
+      <table class="table table-hover align-middle">
+        <tbody>
+          {% for sale in recent_sales %}
+          <tr>
+            <td><a href="{% url 'sale-detail' sale.pk %}">{{ sale.receipt_number }}</a><div class="small text-muted">{{ sale.customer.get_full_name }}</div></td>
+            <td class="text-muted small">{{ sale.date_added|naturaltime }}</td>
+            <td class="num">{% if sale.is_voided %}<span class="status bad">Voided</span>{% else %}{{ sale.grand_total|money }}{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        {% include "partials/empty.html" with icon="fa-receipt" text="No sales yet." %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{{ chart_data|json_script:"chart-data" }}
+{% endblock content %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock javascripts %}

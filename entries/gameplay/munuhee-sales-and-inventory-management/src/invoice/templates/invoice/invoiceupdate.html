@@ -1,0 +1,6 @@
+{% extends "store/form_page.html" %}
+{% block title %}Edit invoice{% endblock %}
+{% block heading %}Edit invoice {{ object.invoice_number }}{% endblock %}
+{% block submit_label %}Save changes{% endblock %}
+{% block cancel_url %}{% url 'invoicelist' %}{% endblock %}
+{% block cancel_url2 %}{% url 'invoicelist' %}{% endblock %}

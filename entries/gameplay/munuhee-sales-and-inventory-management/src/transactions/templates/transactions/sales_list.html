@@ -1,0 +1,43 @@
+{% extends "store/base.html" %}
+{% load formatting %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Sales</h1><p class="sub">{{ paginator.count }} sale{{ paginator.count|pluralize }}</p></div>
+  <div class="page-actions">
+    {% if can_manage %}<a class="btn btn-export" href="{% url 'sales-export' %}" title="Download sales as an Excel workbook"><span class="export-icon"><i class="fa-solid fa-file-excel"></i></span><span>Export</span><span class="export-format">XLSX</span></a>{% endif %}
+    <a class="btn btn-primary" href="{% url 'sale-create' %}"><i class="fa-solid fa-plus me-1"></i> New sale</a>
+  </div>
+</div>
+<div class="card table-card">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Receipt number, customer or phone" %}</div>
+  {% if sales %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Receipt</th><th>Date</th><th>Customer</th><th class="num">Items</th><th class="num">Total</th><th class="num">Paid</th><th>Served by</th><th></th></tr></thead>
+    <tbody>
+      {% for sale in sales %}
+      <tr>
+        <td><a href="{% url 'sale-detail' sale.pk %}">{{ sale.receipt_number }}</a></td>
+        <td>{{ sale.date_added|date:"d M Y, H:i" }}</td>
+        <td>{{ sale.customer.get_full_name }}</td>
+        <td class="num">{{ sale.units|default:0 }}</td>
+        <td class="num">{{ sale.grand_total|money }}</td>
+        <td class="num">{{ sale.amount_paid|money }}</td>
+        <td>{{ sale.served_by.username|default:"" }}</td>
+        <td class="row-actions">
+          {% if sale.is_voided %}<span class="status bad">Voided</span>{% else %}
+          <a href="{% url 'sale-receipt' sale.pk %}" target="_blank" rel="noopener" title="Print receipt"><i class="fa-solid fa-print"></i></a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-receipt" text="No sales yet." %}
+  {% endif %}
+</div>
+{% endblock content %}

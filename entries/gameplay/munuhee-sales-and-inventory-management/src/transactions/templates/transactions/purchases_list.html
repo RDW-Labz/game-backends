@@ -1,0 +1,43 @@
+{% extends "store/base.html" %}
+{% load formatting %}
+{% block title %}Purchase orders{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Purchase orders</h1><p class="sub">Stock is added when an order is marked Successful.</p></div>
+  <div class="page-actions">
+    <a class="btn btn-export" href="{% url 'purchases-export' %}" title="Download purchases as an Excel workbook"><span class="export-icon"><i class="fa-solid fa-file-excel"></i></span><span>Export</span><span class="export-format">XLSX</span></a>
+    <a class="btn btn-primary" href="{% url 'purchase-create' %}"><i class="fa-solid fa-plus me-1"></i> New order</a>
+  </div>
+</div>
+<div class="card table-card">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Search item, vendor, description" %}</div>
+  {% if purchases %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Item</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Total</th><th>Ordered</th><th>Delivery</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for purchase in purchases %}
+      <tr>
+        <td><a href="{% url 'purchase-detail' purchase.pk %}">{{ purchase.item.name }}</a></td>
+        <td>{{ purchase.vendor.name }}</td>
+        <td class="num">{{ purchase.quantity }}</td>
+        <td class="num">{{ purchase.price|money }}</td>
+        <td class="num">{{ purchase.total_value|money }}</td>
+        <td>{{ purchase.order_date|date:"d M Y" }}</td>
+        <td>{{ purchase.delivery_date|date:"d M Y"|default:"" }}</td>
+        <td>{% if purchase.received %}<span class="status ok">Received</span>{% else %}<span class="status warn">Pending</span>{% endif %}</td>
+        <td class="row-actions">
+          <a href="{% url 'purchase-update' purchase.pk %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          <a class="danger" href="{% url 'purchase-delete' purchase.pk %}" title="Delete"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-cart-flatbed" text="No purchase orders yet." %}
+  {% endif %}
+</div>
+{% endblock content %}

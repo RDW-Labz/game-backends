@@ -1,0 +1,59 @@
+{% extends "store/base.html" %}
+{% load formatting %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Products</h1><p class="sub">{{ paginator.count }} product{{ paginator.count|pluralize }}</p></div>
+  <div class="page-actions">
+    {% if can_manage %}
+    <a class="btn btn-export" href="{% querystring _export='xlsx' page=None %}" title="Download products as an Excel workbook"><span class="export-icon"><i class="fa-solid fa-file-excel"></i></span><span>Export</span><span class="export-format">XLSX</span></a>
+    <a class="btn btn-primary" href="{% url 'product-create' %}"><i class="fa-solid fa-plus me-1"></i> Add product</a>
+    {% endif %}
+  </div>
+</div>
+<div class="card table-card">
+  <div class="toolbar">{% include "partials/search.html" with placeholder="Search products, categories, vendors" %}</div>
+  {% if items %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Category</th>
+        <th class="num">In stock</th>
+        <th class="num">Price</th>
+        <th>Expires</th>
+        <th>Vendor</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td><a href="{% url 'product-detail' item.slug %}">{{ item.name }}</a></td>
+        <td>{{ item.category.name }}</td>
+        <td class="num">
+          {% if item.quantity == 0 %}<span class="status bad">Out of stock</span>
+          {% elif item.quantity <= low_stock_threshold %}<span class="status warn">{{ item.quantity }}</span>
+          {% else %}{{ item.quantity }}{% endif %}
+        </td>
+        <td class="num">{{ item.price|money }}</td>
+        <td>{{ item.expiring_date|date:"d M Y"|default:"" }}</td>
+        <td>{{ item.vendor.name|default:"" }}</td>
+        <td class="row-actions">
+          {% if can_manage %}
+          <a href="{% url 'product-update' item.slug %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          <a class="danger" href="{% url 'product-delete' item.slug %}" title="Delete"><i class="fa-solid fa-trash"></i></a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-box" text="No products yet." %}
+  {% endif %}
+</div>
+{% endblock content %}

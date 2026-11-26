@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 06:50 UTC · 1947 entries · 485 vendored, 1462 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 286 | 71 | 215 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,7 +1280,7 @@ _Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 286 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 290 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1334,6 +1334,7 @@ _Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-
 | [Continuous-CBS](entries/gameplay/pathplanning-continuous-cbs/README.md) | Continuous CBS - a modification of conflict based search algorithm, that allows to perform actions (move, wait) of arbitrary duration. Timeline is not discretiz | c++ | MIT | reference | [PathPlanning/Continuous-CBS](https://github.com/PathPlanning/Continuous-CBS) @ `2025-05-30 (branch tip at catalogue time)` |
 | [cpp-sc2](entries/gameplay/cpp-sc2-cpp-sc2/README.md) | StarCraft II Client C++ library, proud fork of Blizzard/s2client-api. | c++ | MIT | vendored | [cpp-sc2/cpp-sc2](https://github.com/cpp-sc2/cpp-sc2) @ `2aad75f3f3d2` |
 | [cupoch](entries/gameplay/neka-nat-cupoch/README.md) | Robotics with GPU computing | c++ | MIT | reference | [neka-nat/cupoch](https://github.com/neka-nat/cupoch) @ `2026-06-25 (branch tip at catalogue time)` |
+| [data-profiling](entries/gameplay/psebenick-data-profiling/README.md) | a set of scripts to pull meta data and data profiling metrics from relational database systems | python | unknown | reference | [psebenick/data-profiling](https://github.com/psebenick/data-profiling) @ `2024-04-17 (branch tip at catalogue time)` |
 | [dijkstra](entries/gameplay/ryancarrier-dijkstra/README.md) | Fast golang Dijkstra path finder | go | MIT | vendored | [RyanCarrier/dijkstra](https://github.com/RyanCarrier/dijkstra) @ `7264718f883b` |
 | [DIMS](entries/gameplay/hugech39-dims/README.md) | 🐟 数据库系统原理课程设计，Drug Inventory Management System，基于 SSM 框架的医院药品库存管理系统。 | java | unknown | reference | [HugeCH39/DIMS](https://github.com/HugeCH39/DIMS) @ `2021-03-20 (branch tip at catalogue time)` |
 | [divert](entries/gameplay/ohchase-divert/README.md) | Rust bindings for Recast Navigation. | rust | none | reference | [ohchase/divert](https://github.com/ohchase/divert) @ `6f2e1e968ba2` |
@@ -1444,6 +1445,7 @@ _Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-
 | [openboxes](entries/gameplay/openboxes-openboxes/README.md) | OpenBoxes is a warehouse management system designed to manage inventory and track stock movements for healthcare facilities. | groovy | EPL-1.0 | reference | [openboxes/openboxes](https://github.com/openboxes/openboxes) @ `2026-11-23 (branch tip at catalogue time)` |
 | [OpenDungeons — spells](entries/gameplay/opendungeons-spells/README.md) | combat, AI, pathing, quest or inventory logic | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
 | [openmu — GameLogic](entries/gameplay/openmu-src-gamelogic/README.md) | MMO gameplay logic: combat, skills, inventory, quests | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
+| [OpenQuarterMaster](entries/gameplay/epic-breakfast-productions-openquartermaster/README.md) | Open Quartermaster is an open source inventory management system, designed to be simple to use yet powerful and extendable. The last inventory management system | java | GPL-3.0 | reference | [Epic-Breakfast-Productions/OpenQuarterMaster](https://github.com/Epic-Breakfast-Productions/OpenQuarterMaster) @ `2026-11-25 (branch tip at catalogue time)` |
 | [OpenRCT2-ProxyPather](entries/gameplay/basssiiie-openrct2-proxypather/README.md) | This plugin lets you quickly cover guide paths with full paths without changing the guests pathfinding. | typescript | MIT | reference | [Basssiiie/OpenRCT2-ProxyPather](https://github.com/Basssiiie/OpenRCT2-ProxyPather) @ `2023-03-01 (branch tip at catalogue time)` |
 | [OpenRPG_Inventory](entries/gameplay/angelhodar-openrpg-inventory/README.md) | Generic and fully featured multipurpose inventory container and equipment system for Unreal Engine 4 | n/a | MIT | reference | [angelhodar/OpenRPG_Inventory](https://github.com/angelhodar/OpenRPG_Inventory) @ `2021-03-04 (branch tip at catalogue time)` |
 | [OpenSteer](entries/gameplay/meshula-opensteer/README.md) | OpenSteer is a C++ library to help build steering behaviors for autonomous characters in games and animation. | c++ | unknown | reference | [meshula/OpenSteer](https://github.com/meshula/OpenSteer) @ `2023-03-31 (branch tip at catalogue time)` |
@@ -1511,6 +1513,8 @@ _Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-
 | [rot.js](entries/gameplay/ondras-rot-js/README.md) | ROguelike Toolkit in JavaScript. Cool dungeon-related stuff, interactive manual, documentation, tests! | javascript | BSD-3-Clause | vendored | [ondras/rot.js](https://github.com/ondras/rot.js) @ `46782e248c2d` |
 | [rrt](entries/gameplay/openrr-rrt/README.md) | RRT (Rapidly-exploring Random Tree) library in Rust | rust | Apache-2.0 | reference | [openrr/rrt](https://github.com/openrr/rrt) @ `2025-12-23 (branch tip at catalogue time)` |
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
+| [sales-and-inventory-management](entries/gameplay/munuhee-sales-and-inventory-management/README.md) | Open-source sales and inventory management system in Python/Django: point of sale (POS), stock control, purchase orders, PDF invoices and receipts, billing, loy | python | MIT | vendored | [munuhee/sales-and-inventory-management](https://github.com/munuhee/sales-and-inventory-management) @ `0733e7216e88` |
+| [Sales-and-Inventory-Management-System](entries/gameplay/pj28105-sales-and-inventory-management-system/README.md) | Tkinter(Python Module) based GUI application | python | none | reference | [pj28105/Sales-and-Inventory-Management-System](https://github.com/pj28105/Sales-and-Inventory-Management-System) @ `4a9744633cc5` |
 | [sc2-pathlib](entries/gameplay/drinfy-sc2-pathlib/README.md) | Pathfinding and terrain analysis library for Starcraft 2 bot api in Rust | rust | MIT | reference | [DrInfy/sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) @ `2024-11-24 (branch tip at catalogue time)` |
 | [Scriptable-Object-Inventory](entries/gameplay/sniffle6-scriptable-object-inventory/README.md) | A scriptable object based inventory system for Unity3D | shaderlab | unknown | reference | [sniffle6/Scriptable-Object-Inventory](https://github.com/sniffle6/Scriptable-Object-Inventory) @ `2020-02-19 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |

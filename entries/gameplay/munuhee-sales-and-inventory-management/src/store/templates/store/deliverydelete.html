@@ -1,0 +1,6 @@
+{% extends "store/confirm_delete.html" %}
+{% block title %}Delete delivery{% endblock %}
+{% block heading %}Delete this delivery?{% endblock %}
+{% block message %}Delivery of {{ object.item.name|default:"a removed item" }} to {{ object.customer_name|default:"a customer" }} on {{ object.date|date:"d M Y" }}.{% endblock %}
+{% block confirm_label %}Delete{% endblock %}
+{% block cancel_url %}{% url 'deliveries' %}{% endblock %}

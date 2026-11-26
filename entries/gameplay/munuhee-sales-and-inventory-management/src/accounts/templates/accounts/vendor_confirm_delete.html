@@ -1,0 +1,6 @@
+{% extends "store/confirm_delete.html" %}
+{% block title %}Delete vendor{% endblock %}
+{% block heading %}Delete {{ object.name }}?{% endblock %}
+{% block message %}Vendors with purchase orders cannot be deleted.{% endblock %}
+{% block confirm_label %}Delete{% endblock %}
+{% block cancel_url %}{% url 'vendor-list' %}{% endblock %}

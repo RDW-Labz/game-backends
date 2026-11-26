@@ -1,0 +1,81 @@
+{% extends "store/base.html" %}
+{% load formatting %}
+{% block title %}Sale {{ sale.receipt_number }}{% endblock %}
+{% block content %}
+<a class="back-link detail-back-link" href="{% url 'saleslist' %}"><i class="fa-solid fa-arrow-left"></i> Sales</a>
+<div class="page-header detail-header">
+  <div>
+    <h1>Sale {{ sale.receipt_number }}</h1>
+    <p class="sub">
+      {{ sale.date_added|date:"d M Y, H:i" }}
+      {% if sale.served_by %} · served by {{ sale.served_by.username }}{% endif %}
+      {% if sale.is_voided %} · <span class="status bad">Voided</span>{% else %} · <span class="status ok">Completed</span>{% endif %}
+    </p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-primary" href="{% url 'sale-receipt' sale.pk %}" target="_blank" rel="noopener"><i class="fa-solid fa-print me-1"></i> Print receipt</a>
+    <a class="btn btn-light" href="{% url 'sale-receipt' sale.pk %}?download=1"><i class="fa-solid fa-download me-1"></i> Download PDF</a>
+    {% if can_manage and not sale.is_voided %}
+    <a class="btn btn-outline-danger" href="{% url 'sale-delete' sale.pk %}"><i class="fa-solid fa-ban me-1"></i> Void</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if sale.is_voided %}
+<div class="alert alert-danger py-2">
+  Voided {{ sale.voided_at|date:"d M Y, H:i" }}{% if sale.voided_by %} by {{ sale.voided_by.username }}{% endif %}{% if sale.void_reason %}: {{ sale.void_reason }}{% endif %}. Stock was restored and loyalty points reversed.
+</div>
+{% endif %}
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card table-card">
+      <div class="card-header">Items</div>
+      <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          {% for line in lines %}
+          <tr>
+            <td><a href="{% url 'product-detail' line.item.slug %}">{{ line.item.name }}</a></td>
+            <td class="num">{{ line.quantity }}</td>
+            <td class="num">{{ line.price|money }}</td>
+            <td class="num">{{ line.total_detail|money }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-header">Payment</div>
+      <div class="card-body">
+        <table class="totals">
+          <tr><td>Subtotal</td><td>{{ sale.sub_total|money }}</td></tr>
+          {% if sale.discount_amount %}<tr class="muted"><td>Loyalty discount</td><td>-{{ sale.discount_amount|money }}</td></tr>{% endif %}
+          <tr class="muted"><td>Tax ({{ sale.tax_percentage|percent }})</td><td>{{ sale.tax_amount|money }}</td></tr>
+          <tr class="grand"><td>Total</td><td>{{ sale.grand_total|money }}</td></tr>
+          <tr class="muted"><td>Paid</td><td>{{ sale.amount_paid|money }}</td></tr>
+          <tr class="muted"><td>Change</td><td>{{ sale.amount_change|money }}</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Customer</div>
+      <div class="card-body">
+        <a href="{% url 'customer_detail' sale.customer.pk %}" class="fw-semibold">{{ sale.customer.get_full_name }}</a>
+        {% if sale.customer.phone %}<div class="text-muted small">{{ sale.customer.phone }}</div>{% endif %}
+        {% if loyalty_entries %}
+        <ul class="list-unstyled small mt-2 mb-0">
+          {% for entry in loyalty_entries %}
+          <li>{{ entry.get_kind_display }}: <strong>{% if entry.points > 0 %}+{% endif %}{{ entry.points }}</strong> points</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

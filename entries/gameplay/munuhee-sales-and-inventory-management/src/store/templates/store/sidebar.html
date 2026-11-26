@@ -1,0 +1,71 @@
+{% with url_name=request.resolver_match.url_name %}
+<aside class="app-sidebar" aria-label="Main navigation">
+  <a class="brand" href="{% url 'dashboard' %}">
+    <span class="brand-mark"><i class="fa-solid fa-boxes-stacked"></i></span>
+    <span>{{ business.name }}</span>
+  </a>
+
+  <nav class="nav-scroll">
+    <a class="nav-item-link {% if url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+      <i class="fa-solid fa-gauge"></i> Dashboard
+    </a>
+
+    <div class="nav-section">Sales</div>
+    <a class="nav-item-link {% if url_name == 'sale-create' %}active{% endif %}" href="{% url 'sale-create' %}">
+      <i class="fa-solid fa-cash-register"></i> New sale
+    </a>
+    <a class="nav-item-link {% if url_name == 'saleslist' or url_name == 'sale-detail' or url_name == 'sale-delete' %}active{% endif %}" href="{% url 'saleslist' %}">
+      <i class="fa-solid fa-receipt"></i> Sales
+    </a>
+    <a class="nav-item-link {% if url_name == 'customer_list' or url_name == 'customer_detail' or url_name == 'customer_create' or url_name == 'customer_update' %}active{% endif %}" href="{% url 'customer_list' %}">
+      <i class="fa-solid fa-user-group"></i> Customers
+    </a>
+    <a class="nav-item-link {% if url_name == 'invoicelist' or url_name == 'invoice-detail' %}active{% endif %}" href="{% url 'invoicelist' %}">
+      <i class="fa-solid fa-file-invoice"></i> Invoices
+    </a>
+    <a class="nav-item-link {% if url_name == 'deliveries' or url_name == 'delivery-create' or url_name == 'delivery-update' or url_name == 'delivery-detail' %}active{% endif %}" href="{% url 'deliveries' %}">
+      <i class="fa-solid fa-truck"></i> Deliveries
+    </a>
+
+    <div class="nav-section">Inventory</div>
+    <a class="nav-item-link {% if url_name == 'productslist' or url_name == 'product-detail' or url_name == 'item_search_list_view' %}active{% endif %}" href="{% url 'productslist' %}">
+      <i class="fa-solid fa-box"></i> Products
+    </a>
+    <a class="nav-item-link {% if url_name == 'category-list' or url_name == 'category-detail' %}active{% endif %}" href="{% url 'category-list' %}">
+      <i class="fa-solid fa-tags"></i> Categories
+    </a>
+    {% if can_manage %}
+    <a class="nav-item-link {% if url_name == 'purchaseslist' or url_name == 'purchase-create' or url_name == 'purchase-update' or url_name == 'purchase-detail' %}active{% endif %}" href="{% url 'purchaseslist' %}">
+      <i class="fa-solid fa-cart-flatbed"></i> Purchase orders
+    </a>
+    <a class="nav-item-link {% if url_name == 'vendor-list' or url_name == 'vendor-create' or url_name == 'vendor-update' %}active{% endif %}" href="{% url 'vendor-list' %}">
+      <i class="fa-solid fa-industry"></i> Vendors
+    </a>
+
+    <div class="nav-section">Finance</div>
+    <a class="nav-item-link {% if url_name == 'bill_list' or url_name == 'bill_create' or url_name == 'bill_update' %}active{% endif %}" href="{% url 'bill_list' %}">
+      <i class="fa-solid fa-money-bill-wave"></i> Bills
+    </a>
+    {% endif %}
+
+    {% if is_admin %}
+    <div class="nav-section">Administration</div>
+    <a class="nav-item-link {% if url_name == 'profile_list' or url_name == 'profile-create' or url_name == 'profile-update' %}active{% endif %}" href="{% url 'profile_list' %}">
+      <i class="fa-solid fa-id-badge"></i> Staff
+    </a>
+    {% endif %}
+  </nav>
+
+  <div class="sidebar-user">
+    {% include "partials/avatar.html" with profile=request.user.profile %}
+    <div class="who">
+      <a href="{% url 'user-profile' %}">{{ request.user.profile.display_name }}</a>
+      <small>{% if request.user.is_superuser %}Admin{% else %}{{ request.user.profile.get_role_display }}{% endif %}</small>
+    </div>
+    <form method="post" action="{% url 'user-logout' %}">
+      {% csrf_token %}
+      <button type="submit" title="Sign out" aria-label="Sign out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+    </form>
+  </div>
+</aside>
+{% endwith %}

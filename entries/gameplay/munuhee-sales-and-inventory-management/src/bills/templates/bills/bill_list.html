@@ -1,0 +1,45 @@
+{% extends "store/base.html" %}
+{% load formatting %}
+{% block title %}Bills{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h1>Bills</h1></div>
+  <div class="page-actions"><a class="btn btn-primary" href="{% url 'bill_create' %}"><i class="fa-solid fa-plus me-1"></i> Add bill</a></div>
+</div>
+<div class="card table-card">
+  <div class="toolbar">
+    {% include "partials/search.html" with placeholder="Search institution or description" %}
+    <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="Filter by status">
+      <a class="btn btn-light {% if not status %}active{% endif %}" href="{% querystring status=None page=None %}">All</a>
+      <a class="btn btn-light {% if status == 'unpaid' %}active{% endif %}" href="{% querystring status='unpaid' page=None %}">Unpaid</a>
+      <a class="btn btn-light {% if status == 'paid' %}active{% endif %}" href="{% querystring status='paid' page=None %}">Paid</a>
+    </div>
+  </div>
+  {% if bills %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead><tr><th>Institution</th><th>Description</th><th>Payment details</th><th>Date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for bill in bills %}
+      <tr>
+        <td>{{ bill.institution_name }}<div class="small text-muted">{{ bill.phone_number|default:"" }}{% if bill.phone_number and bill.email %} · {% endif %}{{ bill.email|default:"" }}</div></td>
+        <td>{{ bill.description|default:"" }}</td>
+        <td>{{ bill.payment_details }}</td>
+        <td>{{ bill.date|date:"d M Y" }}</td>
+        <td class="num">{{ bill.amount|money }}</td>
+        <td>{% if bill.status %}<span class="status ok">Paid</span>{% else %}<span class="status warn">Unpaid</span>{% endif %}</td>
+        <td class="row-actions">
+          <a href="{% url 'bill_update' bill.slug %}" title="Edit"><i class="fa-solid fa-pen"></i></a>
+          <a class="danger" href="{% url 'bill_delete' bill.pk %}" title="Delete"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% include "partials/pagination.html" %}
+  {% else %}
+    {% include "partials/empty.html" with icon="fa-money-bill-wave" text="No bills recorded." %}
+  {% endif %}
+</div>
+{% endblock content %}

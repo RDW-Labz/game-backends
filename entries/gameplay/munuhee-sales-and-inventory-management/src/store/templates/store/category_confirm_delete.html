@@ -1,0 +1,6 @@
+{% extends "store/confirm_delete.html" %}
+{% block title %}Delete category{% endblock %}
+{% block heading %}Delete {{ category.name }}?{% endblock %}
+{% block message %}Categories that still have products cannot be deleted.{% endblock %}
+{% block confirm_label %}Delete{% endblock %}
+{% block cancel_url %}{% url 'category-list' %}{% endblock %}

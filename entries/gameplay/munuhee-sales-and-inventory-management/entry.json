@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T06:50:36Z",
+ "category": "gameplay",
+ "commit": "0733e7216e88",
+ "delivery": "vendored",
+ "description": "munuhee/sales-and-inventory-management \u2014 Open-source sales and inventory management system in Python/Django: point of sale (POS), stock control, purchase orders, PDF invoices and receipts, billing, loyalty points and role-based staff access. Docker ready.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "sales-and-inventory-management",
+ "size_bytes": 247290,
+ "slug": "munuhee-sales-and-inventory-management",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 82,
+ "system": "Open-source sales and inventory management system in Python/Django: point of sale (POS), stock control, purchase orders, PDF invoices and receipts, billing, loy",
+ "upstream": "https://github.com/munuhee/sales-and-inventory-management",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,127 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block title %}New sale{% endblock title %}
+
+{% block stylesheets %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" integrity="sha384-OXVF05DQEe311p6ohU11NwlnX08FzMCsyoXzGOaL+83dKAb3qS17yZJxESl8YrJQ" crossorigin="anonymous" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="page-header pos-heading">
+  <div><div class="eyebrow">Point of sale</div><h1>New sale</h1><p class="sub">Build the cart, select a customer, then take payment.</p></div>
+</div>
+
+<form id="sale-form" class="pos-form" novalidate data-no-ajax>
+  {% csrf_token %}
+  <div class="row g-3 pos-layout">
+    <div class="col-lg-8">
+      <div class="card pos-picker mb-3">
+        <div class="card-body">
+          <div class="pos-field-heading"><span class="pos-field-icon"><i class="fa-solid fa-magnifying-glass"></i></span><div><label class="form-label" for="item-search">Find a product</label><div class="pos-field-note">Search by product name or scan a barcode</div></div><span class="pos-key">/</span></div>
+          <select id="item-search" class="form-select" data-url="{% url 'get_items' %}"></select>
+          <div class="form-text"><i class="fa-solid fa-circle-check"></i> Only products with stock available are shown.</div>
+        </div>
+      </div>
+
+      <div class="card table-card pos-cart">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2"><span class="pos-cart-icon"><i class="fa-solid fa-basket-shopping"></i></span><strong>Current sale</strong><span class="pos-cart-count" id="cart-count">0 items</span></div>
+          <button type="button" class="btn btn-sm btn-link pos-clear" id="clear-cart" disabled>Clear cart</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle" id="cart-table">
+            <thead><tr><th>Item</th><th class="num">Price</th><th class="num">Qty</th><th class="num">Amount</th><th></th></tr></thead>
+            <tbody id="cart-body"></tbody>
+          </table>
+        </div>
+        <div id="cart-empty" class="pos-empty"><span class="pos-empty-icon"><i class="fa-solid fa-basket-shopping"></i></span><strong>Your cart is empty</strong><span>Search for a product above to start this sale.</span></div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card pos-checkout">
+        <div class="card-body">
+          <div class="pos-checkout-heading"><span class="pos-checkout-icon"><i class="fa-solid fa-credit-card"></i></span><div><h2>Checkout</h2><p>Customer and payment details</p></div></div>
+          <div class="mb-3 pos-input-block">
+            <label class="form-label" for="customer">Customer</label>
+            <select id="customer" class="form-select" data-url="{% url 'get_customers' %}" required></select>
+            <div class="pos-inline-link"><i class="fa-solid fa-user-plus"></i><a href="{% url 'customer_create' %}" target="_blank" rel="noopener">Add a new customer</a></div>
+          </div>
+
+          <div class="mb-3 pos-input-block">
+            <label class="form-label" for="tax">Tax rate (%)</label>
+            <div class="input-group pos-tax-input"><input id="tax" type="number" class="form-control" min="0" max="100" step="0.01" value="0" inputmode="decimal" aria-describedby="tax-help"><span class="input-group-text">%</span></div>
+            <div class="form-text" id="tax-help">Applied to the sale subtotal.</div>
+          </div>
+
+          {% if loyalty.enabled %}
+          <div class="mb-3" id="loyalty-box" hidden>
+            <label class="form-label" for="redeem">Redeem loyalty points</label>
+            <div class="input-group">
+              <input id="redeem" type="number" class="form-control" min="0" step="1" value="0">
+              <button class="btn btn-light" type="button" id="redeem-max">Use max</button>
+            </div>
+            <div class="form-text" id="loyalty-hint"></div>
+          </div>
+          {% endif %}
+
+          <table class="totals pos-totals mb-3">
+            <tr><td>Subtotal</td><td id="t-sub">0.00</td></tr>
+            <tr class="muted" id="row-discount" hidden><td>Loyalty discount</td><td id="t-discount">0.00</td></tr>
+            <tr class="muted"><td>Tax</td><td id="t-tax">0.00</td></tr>
+            <tr class="grand"><td>Total</td><td id="t-total">0.00</td></tr>
+          </table>
+
+          <div class="mb-2 pos-input-block">
+            <label class="form-label" for="paid">Amount paid</label>
+            <div class="input-group">
+              <span class="input-group-text">{{ business.currency }}</span>
+              <input id="paid" type="number" class="form-control" min="0" step="0.01" inputmode="decimal" placeholder="0.00" aria-label="Amount paid in {{ business.currency }}">
+              <button class="btn btn-light" type="button" id="paid-exact">Exact</button>
+            </div>
+          </div>
+          <div class="pos-change-row"><span>Change due</span><strong id="t-change">{{ business.currency }} 0.00</strong></div>
+
+          <div class="alert alert-danger py-2 small" id="form-error" role="alert" aria-live="polite" hidden></div>
+          <button type="submit" class="btn btn-primary w-100 py-2 pos-submit" id="submit-btn"><i class="fa-solid fa-lock me-2"></i>Complete sale</button>
+          <div class="pos-secure-note"><i class="fa-solid fa-shield-halved"></i> Prices and totals are verified securely.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="modal fade" id="done-modal" tabindex="-1" aria-labelledby="done-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body pos-done-body">
+        <div class="pos-done-heading">
+          <span class="pos-done-icon"><i class="fa-solid fa-check"></i></span>
+          <span class="pos-done-kicker">Payment recorded</span>
+          <h2 id="done-title">Sale completed</h2>
+          <p>Your transaction has been saved successfully.</p>
+        </div>
+        <div class="pos-done-summary">
+          <div class="pos-done-receipt"><span>Receipt</span><strong id="done-receipt"></strong></div>
+          <div class="pos-done-total"><span>Sale total</span><strong id="done-total"></strong></div>
+          <div class="pos-done-change"><span id="done-change-label">Change returned</span><strong id="done-change"></strong></div>
+        </div>
+        <p class="pos-done-points" id="done-points" hidden></p>
+        <div class="pos-done-actions">
+          <a class="btn btn-primary" id="done-print" target="_blank" rel="noopener"><i class="fa-solid fa-print me-1"></i> Print receipt</a>
+          <a class="btn btn-light" id="done-view">View sale</a>
+          <button class="btn btn-light" type="button" id="done-new">New sale</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ loyalty|json_script:"loyalty-config" }}
+{{ business.currency|json_script:"currency" }}
+{% endblock content %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" integrity="sha384-d3UHjPdzJkZuk5H3qKYMLRyWLAQBJbby2yr2Q58hXXtAGF8RSNO9jpLDlKKPv5v3" crossorigin="anonymous"></script>
+<script src="{% static 'js/pos.js' %}"></script>
+{% endblock javascripts %}

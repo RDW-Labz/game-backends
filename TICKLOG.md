@@ -3647,3 +3647,9 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-26 06:34 UTC** — tick 929: +1 screened, +0 reference, 59 skipped, catalogue=1943
   - added gameplay/siamon123-warehouse-inventory-system (MIT, vendored)
+
+- **2026-11-26 06:50 UTC** — tick 930: +2 screened, +2 reference, 29 skipped, catalogue=1947
+  - added gameplay/munuhee-sales-and-inventory-management (MIT, vendored)
+  - added gameplay/pj28105-sales-and-inventory-management-system (none, reference)
+  - reference gameplay/epic-breakfast-productions-openquartermaster
+  - reference gameplay/psebenick-data-profiling

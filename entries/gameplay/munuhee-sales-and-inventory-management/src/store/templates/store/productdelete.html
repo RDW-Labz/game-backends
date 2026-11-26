@@ -1,0 +1,6 @@
+{% extends "store/confirm_delete.html" %}
+{% block title %}Delete product{% endblock %}
+{% block heading %}Delete {{ object.name }}?{% endblock %}
+{% block message %}Products with sales, purchases or invoices are kept for the records and cannot be deleted.{% endblock %}
+{% block confirm_label %}Delete{% endblock %}
+{% block cancel_url %}{% url 'productslist' %}{% endblock %}

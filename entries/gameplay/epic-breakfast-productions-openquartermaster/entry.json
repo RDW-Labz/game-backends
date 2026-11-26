@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T06:50:40Z",
+ "category": "gameplay",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Epic-Breakfast-Productions/OpenQuarterMaster \u2014 Open Quartermaster is an open source inventory management system, designed to be simple to use yet powerful and extendable. The last inventory management system you will ever need!",
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenQuarterMaster",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "epic-breakfast-productions-openquartermaster",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 80,
+ "system": "Open Quartermaster is an open source inventory management system, designed to be simple to use yet powerful and extendable. The last inventory management system",
+ "upstream": "https://github.com/Epic-Breakfast-Productions/OpenQuarterMaster",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
