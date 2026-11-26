@@ -3666,3 +3666,7 @@ One line per 15-minute extension tick, newest last.
   - added netcode/shiwano-submarine (none, reference)
 
 - **2026-11-26 08:26 UTC** — tick 936: +0 screened, +0 reference, 18 skipped, catalogue=1948
+
+- **2026-11-26 08:42 UTC** — tick 937: +2 screened, +0 reference, 50 skipped, catalogue=1950
+  - added save-state/toby-serde-bencode (MIT, vendored)
+  - added save-state/mandrean-har-rs (MIT, vendored)

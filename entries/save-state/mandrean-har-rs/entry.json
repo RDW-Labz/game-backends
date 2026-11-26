@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T08:42:40Z",
+ "category": "save-state",
+ "commit": "7e6d6f6268a2",
+ "delivery": "vendored",
+ "description": "mandrean/har-rs \u2014 A HTTP Archive format (HAR) serialization & deserialization library, written in Rust.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "har-rs",
+ "size_bytes": 27174,
+ "slug": "mandrean-har-rs",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 53,
+ "system": "A HTTP Archive format (HAR) serialization & deserialization library, written in Rust.",
+ "upstream": "https://github.com/mandrean/har-rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

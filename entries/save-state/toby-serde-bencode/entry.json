@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T08:42:38Z",
+ "category": "save-state",
+ "commit": "f36b82c6d528",
+ "delivery": "vendored",
+ "description": "toby/serde-bencode \u2014 Serde backed Bencode encoding/decoding library for Rust.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "serde-bencode",
+ "size_bytes": 89966,
+ "slug": "toby-serde-bencode",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 79,
+ "system": "Serde backed Bencode encoding/decoding library for Rust.",
+ "upstream": "https://github.com/toby/serde-bencode",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

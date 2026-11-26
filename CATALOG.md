@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 08:26 UTC · 1948 entries · 485 vendored, 1463 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-26 08:26 UTC · 1948 entries · 485 vendored, 1463 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
-| [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
+| [save-state](#save-state) — Save / state systems | 112 | 33 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
 
 
@@ -1753,7 +1753,7 @@ _Generated 2026-11-26 08:26 UTC · 1948 entries · 485 vendored, 1463 reference-
 
 ## save-state
 
-**Save / state systems** — 110 entries
+**Save / state systems** — 112 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1803,6 +1803,7 @@ _Generated 2026-11-26 08:26 UTC · 1948 entries · 485 vendored, 1463 reference-
 | [GameboyPrinterPaperSimulation](entries/save-state/raphael-boichot-gameboyprinterpapersimulation/README.md) | Overlay for Game Boy Printer emulator with e-paper feature and complete support, hints and savestates for the 110 compatible games ! | c++ | GPL-3.0 | reference | [Raphael-Boichot/GameboyPrinterPaperSimulation](https://github.com/Raphael-Boichot/GameboyPrinterPaperSimulation) @ `54273a1399ca` |
 | [geojson](entries/save-state/georust-geojson/README.md) | Library for serializing the GeoJSON vector GIS file format | rust | Apache-2.0 | reference | [georust/geojson](https://github.com/georust/geojson) @ `2026-11-18 (branch tip at catalogue time)` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
+| [har-rs](entries/save-state/mandrean-har-rs/README.md) | A HTTP Archive format (HAR) serialization & deserialization library, written in Rust. | rust | MIT | vendored | [mandrean/har-rs](https://github.com/mandrean/har-rs) @ `7e6d6f6268a2` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [houio](entries/save-state/dkoerner-houio/README.md) | C++ library for reading and writing of houdini geometry file format (json/binary json) | objective-c | unknown | reference | [dkoerner/houio](https://github.com/dkoerner/houio) @ `2020-08-10 (branch tip at catalogue time)` |
 | [hyperhyperspace-core](entries/save-state/hyperhyperspace-hyperhyperspace-core/README.md) | A library to create p2p applications, using the browser as a full peer. | typescript | MIT | vendored | [hyperhyperspace/hyperhyperspace-core](https://github.com/hyperhyperspace/hyperhyperspace-core) @ `4b43009c377a` |
@@ -1848,6 +1849,7 @@ _Generated 2026-11-26 08:26 UTC · 1948 entries · 485 vendored, 1463 reference-
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
 | [sbinary](entries/save-state/harrah-sbinary/README.md) | Library for describing binary formats for Scala types | scala | MIT | reference | [harrah/sbinary](https://github.com/harrah/sbinary) @ `2015-12-06 (branch tip at catalogue time)` |
 | [serde](entries/save-state/serdedotnet-serde/README.md) | Serde.NET is a C# port of the popular Serde serialization library for Rust | c# | BSD-3-Clause | reference | [serdedotnet/serde](https://github.com/serdedotnet/serde) @ `2026-11-15 (branch tip at catalogue time)` |
+| [serde-bencode](entries/save-state/toby-serde-bencode/README.md) | Serde backed Bencode encoding/decoding library for Rust. | rust | MIT | vendored | [toby/serde-bencode](https://github.com/toby/serde-bencode) @ `f36b82c6d528` |
 | [serde-reflection](entries/save-state/serde-tools-serde-reflection/README.md) | Rust libraries and tools to help with interoperability and testing of serialization formats based on Serde. | rust | Apache-2.0 | reference | [serde-tools/serde-reflection](https://github.com/serde-tools/serde-reflection) @ `2026-11-18 (branch tip at catalogue time)` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
 | [Server-crashes-on-player-connect](entries/save-state/teehee123123-server-crashes-on-player-connect/README.md) | ---- Minecraft Crash Report ---- // Ooh. Shiny.  Time: 7/4/13 11:37 PM Description: Ticking entity  java.lang.OutOfMemoryError: Java heap space 	at net.minecraf | n/a | unknown | reference | [Teehee123123/Server-crashes-on-player-connect](https://github.com/Teehee123123/Server-crashes-on-player-connect) @ `2022-08-31 (branch tip at catalogue time)` |
