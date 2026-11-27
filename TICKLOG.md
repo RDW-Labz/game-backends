@@ -3896,3 +3896,5 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-27 03:38 UTC** — tick 1008: +1 screened, +0 reference, 59 skipped, catalogue=2034
   - added engines/genaray-arch-zeroallocjobscheduler (Apache-2.0, vendored)
+
+- **2026-11-27 03:54 UTC** — tick 1009: +0 screened, +0 reference, 57 skipped, catalogue=2034
