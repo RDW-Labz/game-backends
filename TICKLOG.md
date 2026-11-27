@@ -4029,3 +4029,6 @@ One line per 15-minute extension tick, newest last.
   - added engines/fe11xa-strife (MIT, vendored)
 
 - **2026-11-27 20:42 UTC** — tick 1072: +0 screened, +0 reference, 60 skipped, catalogue=2039
+
+- **2026-11-27 20:58 UTC** — tick 1073: +1 screened, +0 reference, 50 skipped, catalogue=2040
+  - added engines/voxel-voxel-clientmc (none, reference)

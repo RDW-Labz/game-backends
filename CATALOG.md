@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 20:42 UTC · 2039 entries · 527 vendored, 1512 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 20:58 UTC · 2040 entries · 527 vendored, 1513 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 834 | 206 | 628 |
+| [engines](#engines) — Game engines and engine subsystems | 835 | 206 | 629 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-27 20:42 UTC · 2039 entries · 527 vendored, 1512 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 834 entries
+**Game engines and engine subsystems** — 835 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -797,6 +797,7 @@ _Generated 2026-11-27 20:42 UTC · 2039 entries · 527 vendored, 1512 reference-
 | [Void](entries/engines/shmellyorc-void/README.md) | A modular, extensible 2D game framework for .NET. | c# | MIT | vendored | [Shmellyorc/Void](https://github.com/Shmellyorc/Void) @ `fee9b4ffecfe` |
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |
 | [VOX4U](entries/engines/mik14a-vox4u/README.md) | MagicaVoxel VOX Format import plugin for Unreal Engine 5 | c++ | MIT | reference | [mik14a/VOX4U](https://github.com/mik14a/VOX4U) @ `2023-11-11 (branch tip at catalogue time)` |
+| [voxel-clientmc](entries/engines/voxel-voxel-clientmc/README.md) | Minecraft client using WebSockets and voxel-engine (voxel.js plugin) | javascript | none | reference | [voxel/voxel-clientmc](https://github.com/voxel/voxel-clientmc) @ `b1c9991b73c4` |
 | [Voxel-Core](entries/engines/clarkthylord-voxel-core/README.md) | Voxel plugin for the Godot 3! | gdscript | MIT | vendored | [ClarkThyLord/Voxel-Core](https://github.com/ClarkThyLord/Voxel-Core) @ `0b4c35014f95` |
 | [voxel-engine](entries/engines/max-mapper-voxel-engine/README.md) | 3D HTML5 voxel game engine | javascript | BSD-3-Clause | reference | [max-mapper/voxel-engine](https://github.com/max-mapper/voxel-engine) @ `2017-12-08 (branch tip at catalogue time)` |
 | [voxel-engine](entries/engines/sjoerdev-voxel-engine/README.md) | This is a 3d graphics engine that focusses on rendering voxels as fast as possible without sacrificing dynamic geometry. | c# | MIT | reference | [sjoerdev/voxel-engine](https://github.com/sjoerdev/voxel-engine) @ `2026-08-16 (branch tip at catalogue time)` |

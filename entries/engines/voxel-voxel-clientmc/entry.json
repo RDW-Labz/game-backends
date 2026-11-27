@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-27T20:58:37Z",
+ "category": "engines",
+ "commit": "b1c9991b73c4",
+ "delivery": "reference",
+ "description": "voxel/voxel-clientmc \u2014 Minecraft client using WebSockets and voxel-engine (voxel.js plugin)",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "voxel-clientmc",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 66641,
+ "slug": "voxel-voxel-clientmc",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 60,
+ "system": "Minecraft client using WebSockets and voxel-engine (voxel.js plugin)",
+ "upstream": "https://github.com/voxel/voxel-clientmc",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
