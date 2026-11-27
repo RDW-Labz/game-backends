@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-27T13:46:38Z",
+ "category": "netcode",
+ "commit": "40933d3a41c3",
+ "delivery": "reference",
+ "description": "enrickvv/valheim-coop-ledelan \u2014 Cooperative Valheim sessions with shared server hosting for group play.",
+ "language": "html",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "valheim-coop-ledelan",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "enrickvv-valheim-coop-ledelan",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 151,
+ "system": "Cooperative Valheim sessions with shared server hosting for group play.",
+ "upstream": "https://github.com/enrickvv/valheim-coop-ledelan",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

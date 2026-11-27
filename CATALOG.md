@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 13:30 UTC · 2036 entries · 526 vendored, 1510 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 13:46 UTC · 2037 entries · 526 vendored, 1511 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-27 13:30 UTC · 2036 entries · 526 vendored, 1510 reference-
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 296 | 75 | 221 |
-| [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
+| [netcode](#netcode) — Networking / netcode | 170 | 47 | 123 |
 | [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
 | [procgen](#procgen) — Procedural generation | 147 | 37 | 110 |
 
@@ -1654,7 +1654,7 @@ _Generated 2026-11-27 13:30 UTC · 2036 entries · 526 vendored, 1510 reference-
 
 ## netcode
 
-**Networking / netcode** — 169 entries
+**Networking / netcode** — 170 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1814,6 +1814,7 @@ _Generated 2026-11-27 13:30 UTC · 2036 entries · 526 vendored, 1510 reference-
 | [UnityUnetMovement](entries/netcode/genasg-unityunetmovement/README.md) | This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation   | c# | MIT | vendored | [GenaSG/UnityUnetMovement](https://github.com/GenaSG/UnityUnetMovement) @ `927f772cfb1a` |
 | [Unofficial-Epic-Games-products](entries/netcode/jawschamp-unofficial-epic-games-products/README.md) | This repository is dedicated to hosting tutorials on how to use different community made applications/apis etc related to Epic Games or Fortnite and to provide  | n/a | none | reference | [Jawschamp/Unofficial-Epic-Games-products](https://github.com/Jawschamp/Unofficial-Epic-Games-products) @ `09de34891841` |
 | [urchinEngine](entries/netcode/petitg1987-urchinengine/README.md) | Game engine library: 3D, Physics, Sound, Network, IA, Map Editor | c++ | unknown | reference | [petitg1987/urchinEngine](https://github.com/petitg1987/urchinEngine) @ `2026-11-11 (branch tip at catalogue time)` |
+| [valheim-coop-ledelan](entries/netcode/enrickvv-valheim-coop-ledelan/README.md) | Cooperative Valheim sessions with shared server hosting for group play. | html | none | reference | [enrickvv/valheim-coop-ledelan](https://github.com/enrickvv/valheim-coop-ledelan) @ `40933d3a41c3` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [voidstrike](entries/netcode/braedonsaunders-voidstrike/README.md) | Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulat | typescript | MIT | reference | [braedonsaunders/voidstrike](https://github.com/braedonsaunders/voidstrike) @ `4df0235116b7` |
 | [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
