@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-27T19:06:41Z",
+ "category": "engines",
+ "commit": "bafa8fc2778f",
+ "delivery": "reference",
+ "description": "Shilo/PixelDoll \u2014 Dress up your 2D game characters with pixel-perfect paper dolling. Generate swappable, frame-aligned equipment layers and export them to any game engine. Powered by PixelLab. Not an official app. https://pixeldoll.app https://shilo.github.io/PixelDoll",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "PixelDoll",
+ "reference_reason": "size gate: 20 MB",
+ "size_bytes": 21697145,
+ "slug": "shilo-pixeldoll",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 41,
+ "system": "Dress up your 2D game characters with pixel-perfect paper dolling. Generate swappable, frame-aligned equipment layers and export them to any game engine. Powere",
+ "upstream": "https://github.com/Shilo/PixelDoll",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

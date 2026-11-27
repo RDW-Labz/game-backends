@@ -4013,3 +4013,6 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-27 18:34 UTC** — tick 1064: +0 screened, +0 reference, 60 skipped, catalogue=2037
 
 - **2026-11-27 18:50 UTC** — tick 1065: +0 screened, +0 reference, 60 skipped, catalogue=2037
+
+- **2026-11-27 19:06 UTC** — tick 1066: +1 screened, +0 reference, 57 skipped, catalogue=2038
+  - added engines/shilo-pixeldoll (MIT, reference)

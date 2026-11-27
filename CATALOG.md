@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 18:50 UTC · 2037 entries · 526 vendored, 1511 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 19:06 UTC · 2038 entries · 526 vendored, 1512 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 832 | 205 | 627 |
+| [engines](#engines) — Game engines and engine subsystems | 833 | 205 | 628 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-27 18:50 UTC · 2037 entries · 526 vendored, 1511 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 832 entries
+**Game engines and engine subsystems** — 833 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -587,6 +587,7 @@ _Generated 2026-11-27 18:50 UTC · 2037 entries · 526 vendored, 1511 reference-
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [piston_window](entries/engines/pistondevelopers-piston-window/README.md) | The official Piston Window for the Piston game engine | rust | MIT | reference | [PistonDevelopers/piston_window](https://github.com/PistonDevelopers/piston_window) @ `2026-10-11 (branch tip at catalogue time)` |
 | [pixel](entries/engines/faiface-pixel/README.md) | A hand-crafted 2D game library in Go | go | MIT | reference | [faiface/pixel](https://github.com/faiface/pixel) @ `2024-05-23 (branch tip at catalogue time)` |
+| [PixelDoll](entries/engines/shilo-pixeldoll/README.md) | Dress up your 2D game characters with pixel-perfect paper dolling. Generate swappable, frame-aligned equipment layers and export them to any game engine. Powere | typescript | MIT | reference | [Shilo/PixelDoll](https://github.com/Shilo/PixelDoll) @ `bafa8fc2778f` |
 | [Pixelwave](entries/engines/spiralstorm-pixelwave/README.md) | A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API | c | Zlib | vendored | [spiralstorm/Pixelwave](https://github.com/spiralstorm/Pixelwave) @ `ccfbc9d240b6` |
 | [pixi-framework](entries/engines/hafaux-pixi-framework/README.md) | Simple 2D Game Framework for PixiJS using Vite. | typescript | MIT | reference | [Hafaux/pixi-framework](https://github.com/Hafaux/pixi-framework) @ `2024-03-14 (branch tip at catalogue time)` |
 | [pixi-vn](entries/engines/drincs-productions-pixi-vn/README.md) | Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework. | typescript | LGPL-2.1 | reference | [DRincs-Productions/pixi-vn](https://github.com/DRincs-Productions/pixi-vn) @ `e5fd8e15c912` |
