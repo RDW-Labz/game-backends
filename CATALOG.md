@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 20:10 UTC · 2038 entries · 526 vendored, 1512 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 20:26 UTC · 2039 entries · 527 vendored, 1512 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 833 | 205 | 628 |
+| [engines](#engines) — Game engines and engine subsystems | 834 | 206 | 628 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-27 20:10 UTC · 2038 entries · 526 vendored, 1512 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 833 entries
+**Game engines and engine subsystems** — 834 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -714,6 +714,7 @@ _Generated 2026-11-27 20:10 UTC · 2038 entries · 526 vendored, 1512 reference-
 | [StarlingPunk](entries/engines/asaia-starlingpunk/README.md) | StarlingPunk is a framework built on top the Starling library designed to add structure and organization to your 2D game projects. It’s perfect for rapidly prot | actionscript | MIT | reference | [asaia/StarlingPunk](https://github.com/asaia/StarlingPunk) @ `2017-04-17 (branch tip at catalogue time)` |
 | [steam-workshop-download](entries/engines/hikkywannafly-steam-workshop-download/README.md) | Download Steam Workshop items directly without owning the game. Supports Wallpaper Engine and many other games. | typescript | unknown | reference | [Hikkywannafly/steam-workshop-download](https://github.com/Hikkywannafly/steam-workshop-download) @ `2026-06-04 (branch tip at catalogue time)` |
 | [stride](entries/engines/stride3d-stride/README.md) | Stride (formerly Xenko), a free and open-source cross-platform C# game engine. | c# | MIT | reference | [stride3d/stride](https://github.com/stride3d/stride) @ `852da2345e76` |
+| [strife](entries/engines/fe11xa-strife/README.md) | a simple 2d game framework | go | MIT | vendored | [fe11xa/strife](https://github.com/fe11xa/strife) @ `37959d6125ca` |
 | [strife](entries/engines/felixangell-strife/README.md) | a simple 2d game framework | go | MIT | reference | [felixangell/strife](https://github.com/felixangell/strife) @ `2022-07-07 (branch tip at catalogue time)` |
 | [sucle](entries/engines/gregcman-sucle/README.md) | Common Lisp Voxel Game Engine | common lisp | MIT | reference | [gregcman/sucle](https://github.com/gregcman/sucle) @ `2022-07-31 (branch tip at catalogue time)` |
 | [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |

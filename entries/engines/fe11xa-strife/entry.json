@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-27T20:26:37Z",
+ "category": "engines",
+ "commit": "37959d6125ca",
+ "delivery": "vendored",
+ "description": "fe11xa/strife \u2014 a simple 2d game framework",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "strife",
+ "size_bytes": 48058,
+ "slug": "fe11xa-strife",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 253,
+ "system": "a simple 2d game framework",
+ "upstream": "https://github.com/fe11xa/strife",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
