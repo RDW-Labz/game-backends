@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 18:18 UTC · 2037 entries · 526 vendored, 1511 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 18:34 UTC · 2037 entries · 526 vendored, 1511 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
