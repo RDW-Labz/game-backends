@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 06:18 UTC · 2034 entries · 524 vendored, 1510 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 06:34 UTC · 2036 entries · 526 vendored, 1510 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 830 | 203 | 627 |
+| [engines](#engines) — Game engines and engine subsystems | 832 | 205 | 627 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-27 06:18 UTC · 2034 entries · 524 vendored, 1510 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 830 entries
+**Game engines and engine subsystems** — 832 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -460,6 +460,7 @@ _Generated 2026-11-27 06:18 UTC · 2034 entries · 524 vendored, 1510 reference-
 | [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
 | [Love2dCS](entries/engines/endlesstravel-love2dcs/README.md) | C# Wrapper for LÖVE, a 2d game engine | c# | MIT | reference | [endlesstravel/Love2dCS](https://github.com/endlesstravel/Love2dCS) @ `2024-03-23 (branch tip at catalogue time)` |
 | [lovr](entries/engines/bjornbytes-lovr/README.md) | Lua Virtual Reality Framework | c | MIT | reference | [bjornbytes/lovr](https://github.com/bjornbytes/lovr) @ `2026-11-19 (branch tip at catalogue time)` |
+| [lua-gdextension](entries/engines/gilzoide-lua-gdextension/README.md) | Script Godot objects directly in Lua or create sandboxed LuaStates for modding (Godot 4.5+) | c++ | MIT | vendored | [gilzoide/lua-gdextension](https://github.com/gilzoide/lua-gdextension) @ `326646a0ce01` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [lumina](entries/engines/nixonyh-lumina/README.md) | A top down, fast paced, objective based, PvP game, written in Rust, using the Bevy game engine. | rust | unknown | reference | [nixonyh/lumina](https://github.com/nixonyh/lumina) @ `2025-05-08 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -794,6 +795,7 @@ _Generated 2026-11-27 06:18 UTC · 2034 entries · 524 vendored, 1510 reference-
 | [Void](entries/engines/shmellyorc-void/README.md) | A modular, extensible 2D game framework for .NET. | c# | MIT | vendored | [Shmellyorc/Void](https://github.com/Shmellyorc/Void) @ `fee9b4ffecfe` |
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |
 | [VOX4U](entries/engines/mik14a-vox4u/README.md) | MagicaVoxel VOX Format import plugin for Unreal Engine 5 | c++ | MIT | reference | [mik14a/VOX4U](https://github.com/mik14a/VOX4U) @ `2023-11-11 (branch tip at catalogue time)` |
+| [Voxel-Core](entries/engines/clarkthylord-voxel-core/README.md) | Voxel plugin for the Godot 3! | gdscript | MIT | vendored | [ClarkThyLord/Voxel-Core](https://github.com/ClarkThyLord/Voxel-Core) @ `0b4c35014f95` |
 | [voxel-engine](entries/engines/max-mapper-voxel-engine/README.md) | 3D HTML5 voxel game engine | javascript | BSD-3-Clause | reference | [max-mapper/voxel-engine](https://github.com/max-mapper/voxel-engine) @ `2017-12-08 (branch tip at catalogue time)` |
 | [voxel-engine](entries/engines/sjoerdev-voxel-engine/README.md) | This is a 3d graphics engine that focusses on rendering voxels as fast as possible without sacrificing dynamic geometry. | c# | MIT | reference | [sjoerdev/voxel-engine](https://github.com/sjoerdev/voxel-engine) @ `2026-08-16 (branch tip at catalogue time)` |
 | [voxel-mesh-generation](entries/engines/vercidium-voxel-mesh-generation/README.md) | Optimised voxel mesh generation, written in C# and open sourced from the Vercidium Engine. | c# | Apache-2.0 | reference | [Vercidium/voxel-mesh-generation](https://github.com/Vercidium/voxel-mesh-generation) @ `2024-03-27 (branch tip at catalogue time)` |

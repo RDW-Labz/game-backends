@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-27T06:34:37Z",
+ "category": "engines",
+ "commit": "0b4c35014f95",
+ "delivery": "vendored",
+ "description": "ClarkThyLord/Voxel-Core \u2014 Voxel plugin for the Godot 3!",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Voxel-Core",
+ "size_bytes": 198279,
+ "slug": "clarkthylord-voxel-core",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 494,
+ "system": "Voxel plugin for the Godot 3!",
+ "upstream": "https://github.com/ClarkThyLord/Voxel-Core",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

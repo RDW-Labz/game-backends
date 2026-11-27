@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-27T06:34:39Z",
+ "category": "engines",
+ "commit": "326646a0ce01",
+ "delivery": "vendored",
+ "description": "gilzoide/lua-gdextension \u2014 Script Godot objects directly in Lua or create sandboxed LuaStates for modding (Godot 4.5+)",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "lua-gdextension",
+ "size_bytes": 464013,
+ "slug": "gilzoide-lua-gdextension",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 486,
+ "system": "Script Godot objects directly in Lua or create sandboxed LuaStates for modding (Godot 4.5+)",
+ "upstream": "https://github.com/gilzoide/lua-gdextension",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
