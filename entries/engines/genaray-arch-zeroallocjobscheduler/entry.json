@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-27T03:38:38Z",
+ "category": "engines",
+ "commit": "51fb4a96bd1d",
+ "delivery": "vendored",
+ "description": "genaray/Arch.ZeroAllocJobScheduler \u2014 A high-performance alloc free c# Jobscheduler.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.MD",
+ "license_verdict": "clean",
+ "name": "Arch.ZeroAllocJobScheduler",
+ "size_bytes": 246892,
+ "slug": "genaray-arch-zeroallocjobscheduler",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 206,
+ "system": "A high-performance alloc free c# Jobscheduler. ",
+ "upstream": "https://github.com/genaray/Arch.ZeroAllocJobScheduler",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

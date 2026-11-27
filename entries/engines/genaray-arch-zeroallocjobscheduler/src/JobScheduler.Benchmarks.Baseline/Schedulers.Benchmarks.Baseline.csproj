@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Schedulers.Benchmarks.Baseline</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Latest published release. Same scenarios as JobScheduler.Benchmarks, measured against the NuGet package. -->
+    <PackageReference Include="ZeroAllocJobScheduler" Version="1.1.2" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.9" />
+  </ItemGroup>
+
+</Project>

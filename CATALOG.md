@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-27 03:22 UTC · 2033 entries · 523 vendored, 1510 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-27 03:38 UTC · 2034 entries · 524 vendored, 1510 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
+| [engines](#engines) — Game engines and engine subsystems | 830 | 203 | 627 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-27 03:22 UTC · 2033 entries · 523 vendored, 1510 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 829 entries
+**Game engines and engine subsystems** — 830 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -48,6 +48,7 @@ _Generated 2026-11-27 03:22 UTC · 2033 entries · 523 vendored, 1510 reference-
 | [Apos.Shapes](entries/engines/apostolique-apos-shapes/README.md) | Shape rendering library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Shapes](https://github.com/Apostolique/Apos.Shapes) @ `2026-11-10 (branch tip at catalogue time)` |
 | [ArcadeMaker](entries/engines/arcademakersources-arcademaker/README.md) | A cross-platform 2D game engine with its own programming language and IDE. | c# | MIT | reference | [ArcadeMakerSources/ArcadeMaker](https://github.com/ArcadeMakerSources/ArcadeMaker) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
+| [Arch.ZeroAllocJobScheduler](entries/engines/genaray-arch-zeroallocjobscheduler/README.md) | A high-performance alloc free c# Jobscheduler.  | c# | Apache-2.0 | vendored | [genaray/Arch.ZeroAllocJobScheduler](https://github.com/genaray/Arch.ZeroAllocJobScheduler) @ `51fb4a96bd1d` |
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
 | [Arduino-JoyCon-Library-for-Nintendo-Switch](entries/engines/squirelo-arduino-joycon-library-for-nintendo-switch/README.md) | Transform your ATmega32u4 based Arduino boards into Nintendo Switch-compatible gamepads! This library enables the Arduino Leonardo, Micro, or compatible clones  | c++ | LGPL-3.0 | reference | [squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch](https://github.com/squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch) @ `459b332cf47e` |
 | [ark](entries/engines/mlange-42-ark/README.md) | Ark -- Archetype-based Entity Component System (ECS) for Go. | go | Apache-2.0 | reference | [mlange-42/ark](https://github.com/mlange-42/ark) @ `2026-11-17 (branch tip at catalogue time)` |
