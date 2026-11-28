@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-28 04:10 UTC · 2040 entries · 527 vendored, 1513 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-28 04:26 UTC · 2041 entries · 528 vendored, 1513 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-28 04:10 UTC · 2040 entries · 527 vendored, 1513 reference-
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 296 | 75 | 221 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 297 | 76 | 221 |
 | [netcode](#netcode) — Networking / netcode | 170 | 47 | 123 |
 | [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
 | [procgen](#procgen) — Procedural generation | 147 | 37 | 110 |
@@ -1354,7 +1354,7 @@ _Generated 2026-11-28 04:10 UTC · 2040 entries · 527 vendored, 1513 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 296 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 297 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1504,6 +1504,7 @@ _Generated 2026-11-28 04:10 UTC · 2040 entries · 527 vendored, 1513 reference-
 | [minecraft-pathfinding](entries/gameplay/minecraft-pathfinding-minecraft-pathfinding/README.md) | see upstream | typescript | none | reference | [Minecraft-Pathfinding/minecraft-pathfinding](https://github.com/Minecraft-Pathfinding/minecraft-pathfinding) @ `c9d0d3857d52` |
 | [mineflayer-pathfinder](entries/gameplay/prismarinejs-mineflayer-pathfinder/README.md) | Pathfinding plugin that gives bot the ability to go from A to B | javascript | MIT | reference | [PrismarineJS/mineflayer-pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) @ `2026-11-14 (branch tip at catalogue time)` |
 | [Mini-Inventory-and-Sales-Management-System](entries/gameplay/amirsanni-mini-inventory-and-sales-management-system/README.md) | An Inventory and Sales Management System written in PHP (codeIgniter) with support for MySQL and Sqlite3 databases | php | MIT | reference | [amirsanni/Mini-Inventory-and-Sales-Management-System](https://github.com/amirsanni/Mini-Inventory-and-Sales-Management-System) @ `2026-11-18 (branch tip at catalogue time)` |
+| [mintmousse-console](entries/gameplay/siceloheaven-bit-mintmousse-console/README.md) | MintMousse Console: A polished web console for streamlined project contribution. | html | MIT | vendored | [siceloheaven-bit/mintmousse-console](https://github.com/siceloheaven-bit/mintmousse-console) @ `84dc7bd53707` |
 | [mistreevous](entries/gameplay/nikkorn-mistreevous/README.md) | A tool to build and execute behaviour trees in JavaScript and TypeScript | typescript | MIT | vendored | [nikkorn/mistreevous](https://github.com/nikkorn/mistreevous) @ `026f1ffe0623` |
 | [MonoBehaviourTree](entries/gameplay/qriva-monobehaviourtree/README.md) | Simple event driven Behaviour tree for Unity projects | c# | MIT | reference | [Qriva/MonoBehaviourTree](https://github.com/Qriva/MonoBehaviourTree) @ `2024-09-25 (branch tip at catalogue time)` |
 | [mountain-goap](entries/gameplay/caesuric-mountain-goap/README.md) | A GOAP (Goal Oriented Action Planning) AI library, written in C#. | c# | unknown | reference | [caesuric/mountain-goap](https://github.com/caesuric/mountain-goap) @ `2025-03-18 (branch tip at catalogue time)` |

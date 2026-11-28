@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-28T04:26:35Z",
+ "category": "gameplay",
+ "commit": "84dc7bd53707",
+ "delivery": "vendored",
+ "description": "siceloheaven-bit/mintmousse-console \u2014 MintMousse Console: A polished web console for streamlined project contribution.",
+ "language": "html",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mintmousse-console",
+ "size_bytes": 0,
+ "slug": "siceloheaven-bit-mintmousse-console",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 94,
+ "system": "MintMousse Console: A polished web console for streamlined project contribution.",
+ "upstream": "https://github.com/siceloheaven-bit/mintmousse-console",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
