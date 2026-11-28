@@ -1,0 +1,47 @@
+# CodeQL over this repository's own code (see .github/codeql/codeql-config.yml).
+#
+# The repository's default setup analysed `entries/` too: c-cpp autobuild compiled
+# 3.9 GB of vendored engines and the analysis ran past two hours, until the hosted
+# runner lost contact with the job ("The hosted runner lost communication with the
+# server"). This workflow reads only `scripts/`, needs no build for it, and runs
+# weekly and on pull requests that change it.
+#
+# It takes effect once the CodeQL "default setup" in this repository's settings is
+# switched to "advanced": GitHub runs one or the other, never both.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+    paths: ["scripts/**", ".github/codeql/**", ".github/workflows/codeql.yml"]
+  pull_request:
+    paths: ["scripts/**", ".github/codeql/**", ".github/workflows/codeql.yml"]
+  schedule:
+    - cron: "23 4 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["python", "actions"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
