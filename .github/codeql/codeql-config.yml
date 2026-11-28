@@ -1,0 +1,21 @@
+# CodeQL sees this repository's own code, never the catalogue it vendored.
+#
+# `entries/` is 3.9 GB of other projects' engines, gameplay, physics and netcode,
+# copied in under their own licences (POLICY.md). Scanning it costs a runner hours,
+# says nothing about this repository, and on 2026-11-28 it took the c-cpp analysis
+# past two hours until GitHub's hosted runner lost contact with the job
+# ("The hosted runner lost communication with the server").
+#
+# scripts/ is what we wrote: the licence classifier, the catalogue reader, the
+# scout. That is what a CodeQL query should read.
+#
+# GitHub's CodeQL "advanced" setup picks this file up by its path when it generates
+# the analysis workflow, so this repository needs no hand-written workflow to keep
+# it: Settings -> Code security -> CodeQL analysis -> Advanced.
+paths:
+  - scripts
+paths-ignore:
+  - entries
+  - "**/node_modules"
+  - "**/vendor"
+  - "**/third_party"
